@@ -4,6 +4,8 @@ import requests
 from django.shortcuts import HttpResponse
 
 from lib import crypto
+from conf import my_setting
+
 
 '''常量'''
 DINGTALK_CORP_ID = "ding064ce37e8c6fff8435c2f4657eb6378f"  # Target key
@@ -17,6 +19,7 @@ DINGTALK_TOKEN = '123456'
 
 
 # Create your views here.
+# 注册审批回调
 def register_callback(request):
     # 获取access_token
     appkey = 'dingmdy8p4txyehahwqv'
@@ -36,6 +39,7 @@ def register_callback(request):
     return HttpResponse('register')
 
 
+# 处理审批回调
 def get_bms_callback(request):
     aes_key = '1234567890123456789012345678901234567890123'
     key = DINGTALK_CORP_ID
@@ -57,15 +61,24 @@ def get_bms_callback(request):
         if crypto.check_callback_signature('123456', ret, signature, timestamp, nonce):
             print('ret ：', crypto.decrypt(aes_key, ret))
             msg, key, buf = crypto.decrypt(aes_key, ret)
-            print('msg, key, buf ：', (msg, key, buf))
+            if msg.get('EventType') == "check_url":
+                # 加密SUCCESS,完成回调注册
+                # ret_msg = crypto.encrypt_text(aes_key, 'success').decode('utf-8')
+                ret_msg = crypto.encrypt(aes_key, 'success', key).decode('utf-8')
+                sign = crypto.generate_callback_signature('123456', ret_msg, timestamp, nonce)
+                # print('ret_msg：', type(ret_msg), ret_msg)
+                ret_json = json.dumps(
+                    {'msg_signature': sign, 'timeStamp': timestamp, 'nonce': nonce, 'encrypt': ret_msg})
+                # print('ret_json：', ret_json)
+            # 判断审批事件为结束，且审批意见为同意
+            elif msg.get('EventType') == "bpms_instance_change" and msg.get('result') == 'agree' and msg.get('processCode') in my_setting.process_code_lst:
+                # todo，先设计数据库结构
+                pass
+            print('msg : ', msg)
+            print('key : ', msg)
+            print('buf : ', buf)
 
-        # 加密
-        # ret_msg = crypto.encrypt_text(aes_key, 'success').decode('utf-8')
-        ret_msg = crypto.encrypt(aes_key, 'success', key).decode('utf-8')
-        sign = crypto.generate_callback_signature('123456', ret_msg, timestamp, nonce)
-        # print('ret_msg：', type(ret_msg), ret_msg)
-        ret_json = json.dumps({'msg_signature': sign, 'timeStamp': timestamp, 'nonce': nonce, 'encrypt': ret_msg})
-        # print('ret_json：', ret_json)
+
 
         return HttpResponse(ret_json)
     else:
