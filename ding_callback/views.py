@@ -77,9 +77,6 @@ def get_bms_callback(request):
             print('msg : ', msg)
             print('key : ', msg)
             print('buf : ', buf)
-
-
-
         return HttpResponse(ret_json)
     else:
         print('GET:', request.GET)
