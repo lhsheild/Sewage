@@ -2,7 +2,9 @@ import json
 from sys import modules
 import os
 import urllib
+import datetime
 import logging
+
 bmps_logger = logging.getLogger('bmps_callback')
 
 import requests
@@ -157,6 +159,7 @@ def func_container(data_dic):
     geophysical_point = all_data[1].get('value')  # 物探点号
     upload_time = json.loads(all_data[3].get('value'))[0]  # 审批提交时间
     year_s, mon_s, day_s = upload_time.split(' ')[0].split('-')  # 年月日
+    date = datetime.datetime(int(year_s), int(mon_s), int(day_s)).date()  # 检测日期/采样日期
     is_monitor = 1  # 是否监测，1为监测
     not_monitor_reason = None  # 无法监测原因
 
@@ -193,16 +196,52 @@ def func_container(data_dic):
         down_work_photo_thread_lst = []  # 存放下载水流照线程的列表
         work_photo_lst = []  # 下载后水流照链接的列表
         for counter_work, work_photo_link in enumerate(work_photo_link_lst):
-            img_name = '{}_{}_{}'.format(name, 'work', counter_water)
+            img_name = '{}_{}_{}'.format(name, 'work', counter_work)
             t = thread.MyThread(target=save_img, args=(work_photo_link, img_name, upload_time))
             down_work_photo_thread_lst.append(t)
             t.start()
         for t in down_work_photo_thread_lst:
             t.join()
             work_photo_lst.append(t.get_result())
-        work_photo = json.dumps(water_flow_photo_lst)  # 水流照（JSON序列化后存入数据库）
+        work_photo = json.dumps(work_photo_lst)  # 工作照（JSON序列化后存入数据库）
 
-        people = data_dic.get('process_instance').get('title').split('提交')[0]  # 监测者/采样者
+    people = data_dic.get('process_instance').get('title').split('提交')[0]  # 监测者/采样者
+
+    monitor_time_str = all_data[6].get('value')
+    hour_s, min_s = monitor_time_str.split(':')
+    monitor_time = datetime.datetime(int(year_s), int(mon_s), int(day_s), int(hour_s), int(min_s)).time()  # 检测/采样时间段
+
+    # 容器法测流量
+    time1 = all_data[7].get('value')
+    volume1 = all_data[8].get('value')
+    time2 = all_data[9].get('value')
+    volume2 = all_data[10].get('value')
+    time3 = all_data[11].get('value')
+    volume3 = all_data[12].get('value')
+
+    # 样品编号
+    sample_number = all_data[13].get('value')
+
+    sample_photo_link_lst = json.loads(all_data[15].get('value'))  # 钉钉回调的样品照链接
+    if sample_photo_link_lst is not None:
+        down_sample_photo_thread_lst = []  # 存放下载样品照线程的列表
+        sample_photo_lst = []  # 下载后样品照链接的列表
+        for counter_sample, sample_photo_link in enumerate(sample_photo_link_lst):
+            img_name = '{}_{}_{}'.format(name, 'sample', counter_sample)
+            t = thread.MyThread(target=save_img, args=(sample_photo_link, img_name, upload_time))
+            down_sample_photo_thread_lst.append(t)
+            t.start()
+        for t in down_sample_photo_thread_lst:
+            t.join()
+            sample_photo_lst.append(t.get_result())
+        sample_photo = json.dumps(sample_photo_lst)  # 样品照（JSON序列化后存入数据库）
+
+    # 样品颜色
+    sample_color = all_data[16].get('value')
+    # 样品气味
+    sample_odor = all_data[17].get('value')
+    # 样品浊度
+    sample_turbidity = all_data[18].get('value')
 
 
 # 下载图片

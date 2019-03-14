@@ -28,8 +28,8 @@ class SampleInfo(models.Model):
     id = models.AutoField(primary_key=True)
     people = models.CharField('采样者', max_length=32)
 
-    sample_date = models.DateTimeField('采样日期', max_length=32)
-    sample_time = models.DateTimeField('采样时间段', max_length=32)
+    sample_date = models.DateField('采样日期', max_length=32)
+    sample_time = models.TimeField('采样时间段', max_length=32)
     sample_number = models.CharField('样品编号', max_length=16, null=False)
     # sample_count = models.IntegerField('样品数量', max_length=8)
     sample_color = models.CharField('样品颜色', max_length=16)
@@ -57,8 +57,8 @@ class FlowInfo(models.Model):
     id = models.AutoField(primary_key=True)
     people = models.CharField('监测者', max_length=32)
 
-    flow_date = models.DateTimeField('流量监测日期', max_length=32)
-    flow_time = models.DateTimeField('流量监测时间段', max_length=32)
+    flow_date = models.DateField('流量监测日期', max_length=32)
+    flow_time = models.TimeField('流量监测时间段', max_length=32)
     flow_function = models.IntegerField('监测方法')  # 0/1/2/3/4 容器/圆管/方渠/仪器/无法监测
 
     # 容器法

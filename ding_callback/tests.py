@@ -33,8 +33,10 @@ data = {'errcode': 0,
                                                        {'name': '检测指标', 'value': '["COD NH3-N TP TN","BOD","溶氧量"]'},
                                                        {'name': '样品照片',
                                                         'value': '["https://static.dingtalk.com/media/lADPBE1XX57MPFPNBnTNBDg_1080_1652.jpg"]'},
-                                                       {'name': '颜色', 'value': '灰色'}, {'name': '气味', 'value': '无味'},
-                                                       {'name': '浑浊度', 'value': '透明'}, {'name': '是否合格', 'value': '是'}],
+                                                       {'name': '颜色', 'value': '灰色'},
+                                                       {'name': '气味', 'value': '无味'},
+                                                       {'name': '浑浊度', 'value': '透明'},
+                                                       {'name': '是否合格', 'value': '是'}],
                              'operation_records': [{'date': '2019-03-14 14:57:21', 'operation_result': 'NONE',
                                                     'operation_type': 'START_PROCESS_INSTANCE', 'userid': 'manager405'},
                                                    {'date': '2019-03-14 14:57:40', 'operation_result': 'AGREE',
@@ -90,16 +92,24 @@ if __name__ == '__main__':
 
     print(data.get('process_instance').get('title').split('提交')[0])
 
+    # m_s = '12:30'
+    # hour_s, min_s = m_s.split(':')
+    # monitor_time = datetime.datetime(int(hour_s), int(min_s))
+    # print(type(monitor_time), monitor_time)
 
-    # t_lst = json.loads(data.get('process_instance').get('form_component_values')[2].get('value'))
+    t_lst = json.loads(data.get('process_instance').get('form_component_values')[2].get('value'))
     # t_s = t_lst[0]
-    # # t_s = t_s.split(' ')
+    # t_s = t_s.split(' ')
     # # print(t_s)
     # year_s, mon_s, day_s = t_s.split(' ')[0].split('-')
     # hour_s, min_s, sec_s = t_s.split(' ')[1].split(':')
-    # # d_time = datetime.datetime(int(year_s), int(mon_s), int(day_s), int(hour_s), int(min_s), int(sec_s))
-    # d_time = datetime.datetime(int(year_s), int(mon_s), int(day_s))
+    # d_time = datetime.datetime(int(year_s), int(mon_s), int(day_s), int(hour_s), int(min_s), int(sec_s))
+    # d_time = datetime.datetime(int(year_s), int(mon_s), int(day_s), int(hour_s), int(min_s))
     # print(type(d_time), d_time)
+    # print(type(d_time.time()),d_time.time())
+    # print(type(d_time.date()), d_time.date())
+    t_data = data.get('process_instance').get('form_component_values')[18].get('value')
+    print(type(t_data), t_data)
 
 
     # t = {'name': '监测点工作照', 'value': 'null'}
