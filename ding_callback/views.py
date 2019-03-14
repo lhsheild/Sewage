@@ -1,7 +1,9 @@
 import json
+import time
 from sys import modules
 import os
 import urllib.request
+import socket
 import datetime
 import logging
 from concurrent.futures import ThreadPoolExecutor
@@ -265,10 +267,27 @@ def save_img(in_args):
             print(save_path)
         file_suffix = os.path.splitext(img_url)[1]
         filename = '{}{}{}{}'.format(save_path, os.sep, file_name, file_suffix)
+        # 下载方法1
         # urllib.request.urlretrieve(img_url, filename=filename)
-        return filename
+        # 下载方法2
+        try:
+            urllib.request.urlretrieve(img_url, filename=filename)
+        except socket.timeout:
+            count = 1
+            while count <= 5:
+                try:
+                    urllib.request.urlretrieve(img_url, filename=filename)
+                    break
+                except socket.timeout:
+                    err_info = 'Reloading for %d time' % count if count == 1 else 'Reloading for %d times' % count
+                    print(err_info)
+                    count += 1
+            if count > 5:
+                print("downloading picture fialed!")
+
     except IOError as e:
         bmps_logger.error('{}：{}'.format(file_name, e))
     except Exception as e:
         bmps_logger.error('{}：{}'.format(file_name, e))
+    time.sleep(2)
 
