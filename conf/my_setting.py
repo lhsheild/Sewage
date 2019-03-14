@@ -16,7 +16,7 @@ process_code_unable = 'PROC-ELYJ1A4W-SXJ37TP95QVKM4F1BV143-L84IYXSJ-4'
 process_code_lst = [process_code_container, process_code_circle, process_code_square, process_code_machine,
                     process_code_unable]
 # 用于反射的字典
-process_code_dic = {process_code_container: 'fun_container', process_code_circle: 'fun_circle',
+process_code_dic = {process_code_container: 'func_container', process_code_circle: 'func_circle',
                     process_code_square: 'func_square', process_code_machine: 'func_machine',
                     process_code_unable: 'func_unable'}
 
@@ -32,6 +32,7 @@ aes_key = '1234567890123456789012345678901234567890123'
 token = '123456'
 
 # 项目路径
-project_path = os.path.dirname(os.getcwd())
+# project_path = os.path.dirname(os.getcwd())
+project_path = os.getcwd()
 # 图片存储路径
 img_folder_path = os.path.join(project_path, 'img')

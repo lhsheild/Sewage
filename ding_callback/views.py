@@ -1,16 +1,16 @@
 import json
 from sys import modules
 import os
-import urllib
+import urllib.request
 import datetime
 import logging
-
+from concurrent.futures import ThreadPoolExecutor
 bmps_logger = logging.getLogger('bmps_callback')
 
 import requests
 from django.shortcuts import HttpResponse
 
-from lib import crypto, thread
+from lib import crypto
 from conf import my_setting
 from ding_callback import models as ding_models
 
@@ -78,10 +78,11 @@ def get_bms_callback(request):
                 print('msg : ', msg)
                 # print('key : ', msg)
                 # print('buf : ', buf)
-        return HttpResponse('执行回调数据同步')
+        # print('完成回调数据同步')
+        return HttpResponse(None)
     else:
         print('GET:', request.GET)
-        return HttpResponse('2')
+        return HttpResponse(None)
 
 
 def get_failed_callback(request):
@@ -156,8 +157,9 @@ def get_bpms_data_by_bpmsID(id, code):
 def func_container(data_dic):
     all_data = data_dic.get('process_instance').get('form_component_values')
     name = all_data[0].get('value')  # 监测点
+    print(name)
     geophysical_point = all_data[1].get('value')  # 物探点号
-    upload_time = json.loads(all_data[3].get('value'))[0]  # 审批提交时间
+    upload_time = json.loads(all_data[2].get('value'))[0]  # 审批提交时间
     year_s, mon_s, day_s = upload_time.split(' ')[0].split('-')  # 年月日
     date = datetime.datetime(int(year_s), int(mon_s), int(day_s)).date()  # 检测日期/采样日期
     is_monitor = 1  # 是否监测，1为监测
@@ -165,44 +167,49 @@ def func_container(data_dic):
 
     exterior_photo_link_lst = json.loads(all_data[3].get('value'))  # 钉钉回调的外景照链接
     if exterior_photo_link_lst is not None:
+        t_pool = ThreadPoolExecutor(max_workers=8)
         down_ex_photo_thread_lst = []  # 存放下载外景照线程的列表
         exterior_photo_lst = []  # 下载后外景照链接的列表
         for counter, exterior_photo_link in enumerate(exterior_photo_link_lst):
             img_name = '{}_{}_{}'.format(name, 'exterior', counter)
-            t = thread.MyThread(target=save_img, args=(exterior_photo_link, img_name, upload_time))
+            t = t_pool.submit(save_img, (exterior_photo_link, img_name, upload_time, my_setting.img_folder_path))
             down_ex_photo_thread_lst.append(t)
-            t.start()
-        for t in down_ex_photo_thread_lst:
-            t.join()
-            exterior_photo_lst.append(t.get_result())
+            # img_path = save_img((exterior_photo_link, img_name, upload_time, my_setting.img_folder_path))
+            # exterior_photo_lst.append(img_path)
+        t_pool.shutdown()
+        [exterior_photo_lst.append(t.result()) for t in down_ex_photo_thread_lst]
         exterior_photo = json.dumps(exterior_photo_lst)  # 外景照（JSON序列化后存入数据库）
 
-    water_flow_photo_link_lst = json.loads(all_data[3].get('value'))  # 钉钉回调的水流照链接
+    water_flow_photo_link_lst = json.loads(all_data[4].get('value'))  # 钉钉回调的水流照链接
     if water_flow_photo_link_lst is not None:
+        t_pool = ThreadPoolExecutor(max_workers=8)
         down_wf_photo_thread_lst = []  # 存放下载水流照线程的列表
         water_flow_photo_lst = []  # 下载后水流照链接的列表
         for counter_water, water_flow_photo_link in enumerate(water_flow_photo_link_lst):
             img_name = '{}_{}_{}'.format(name, 'water_flow', counter_water)
-            t = thread.MyThread(target=save_img, args=(water_flow_photo_link, img_name, upload_time))
+            # t = thread.MyThread(target=save_img, args=(water_flow_photo_link, img_name, upload_time))
+            t = t_pool.submit(save_img, (water_flow_photo_link, img_name, upload_time, my_setting.img_folder_path))
             down_wf_photo_thread_lst.append(t)
-            t.start()
-        for t in down_wf_photo_thread_lst:
-            t.join()
-            water_flow_photo_lst.append(t.get_result())
+            # img_path = save_img((water_flow_photo_link, img_name, upload_time, my_setting.img_folder_path))
+            # water_flow_photo_lst.append(img_path)
+        t_pool.shutdown()
+        [water_flow_photo_lst.append(t.result()) for t in down_wf_photo_thread_lst]
         water_flow_photo = json.dumps(water_flow_photo_lst)  # 水流照（JSON序列化后存入数据库）
 
-    work_photo_link_lst = json.loads(all_data[3].get('value'))  # 钉钉回调的工作照链接
+    work_photo_link_lst = json.loads(all_data[5].get('value'))  # 钉钉回调的工作照链接
     if work_photo_link_lst is not None:
-        down_work_photo_thread_lst = []  # 存放下载水流照线程的列表
-        work_photo_lst = []  # 下载后水流照链接的列表
+        t_pool = ThreadPoolExecutor(max_workers=8)
+        down_work_photo_thread_lst = []  # 存放下载工作照线程的列表
+        work_photo_lst = []  # 下载后工作照链接的列表
         for counter_work, work_photo_link in enumerate(work_photo_link_lst):
             img_name = '{}_{}_{}'.format(name, 'work', counter_work)
-            t = thread.MyThread(target=save_img, args=(work_photo_link, img_name, upload_time))
+            t = t_pool.submit(save_img, (work_photo_link, img_name, upload_time, my_setting.img_folder_path))
+            # t = thread.MyThread(target=save_img, args=(work_photo_link, img_name, upload_time))
             down_work_photo_thread_lst.append(t)
-            t.start()
-        for t in down_work_photo_thread_lst:
-            t.join()
-            work_photo_lst.append(t.get_result())
+            # img_path = save_img((work_photo_link, img_name, upload_time, my_setting.img_folder_path))
+            # work_photo_lst.append(img_path)
+        t_pool.shutdown()
+        [work_photo_lst.append(t.result()) for t in down_work_photo_thread_lst]
         work_photo = json.dumps(work_photo_lst)  # 工作照（JSON序列化后存入数据库）
 
     people = data_dic.get('process_instance').get('title').split('提交')[0]  # 监测者/采样者
@@ -224,16 +231,15 @@ def func_container(data_dic):
 
     sample_photo_link_lst = json.loads(all_data[15].get('value'))  # 钉钉回调的样品照链接
     if sample_photo_link_lst is not None:
+        t_pool = ThreadPoolExecutor(max_workers=8)
         down_sample_photo_thread_lst = []  # 存放下载样品照线程的列表
         sample_photo_lst = []  # 下载后样品照链接的列表
         for counter_sample, sample_photo_link in enumerate(sample_photo_link_lst):
             img_name = '{}_{}_{}'.format(name, 'sample', counter_sample)
-            t = thread.MyThread(target=save_img, args=(sample_photo_link, img_name, upload_time))
+            t = t_pool.submit(save_img, (sample_photo_link, img_name, upload_time, my_setting.img_folder_path))
             down_sample_photo_thread_lst.append(t)
-            t.start()
-        for t in down_sample_photo_thread_lst:
-            t.join()
-            sample_photo_lst.append(t.get_result())
+            # img_path = save_img((sample_photo_link, img_name, upload_time, my_setting.img_folder_path))
+        [sample_photo_lst.append(t.result()) for t in down_sample_photo_thread_lst]
         sample_photo = json.dumps(sample_photo_lst)  # 样品照（JSON序列化后存入数据库）
 
     # 样品颜色
@@ -242,20 +248,27 @@ def func_container(data_dic):
     sample_odor = all_data[17].get('value')
     # 样品浊度
     sample_turbidity = all_data[18].get('value')
+    print('数据回调同步完成')
 
 
 # 下载图片
-def save_img(img_url, file_name, upload_time, file_path=my_setting.img_folder_path):
+def save_img(in_args):
+    img_url = in_args[0]
+    file_name = in_args[1]
+    upload_time = in_args[2]
+    file_path =in_args[3]   # my_setting.img_folder_path
     year_s, mon_s, day_s = upload_time.split(' ')[0].split('-')
     save_path = '{}{}{}{}{}{}{}'.format(file_path, os.sep, year_s, os.sep, mon_s, os.sep, day_s)
     try:
         if not os.path.exists(save_path):
             os.makedirs(save_path)
+            print(save_path)
         file_suffix = os.path.splitext(img_url)[1]
         filename = '{}{}{}{}'.format(save_path, os.sep, file_name, file_suffix)
-        urllib.urlretrieve(img_url, filename=filename)
+        # urllib.request.urlretrieve(img_url, filename=filename)
         return filename
     except IOError as e:
         bmps_logger.error('{}：{}'.format(file_name, e))
     except Exception as e:
         bmps_logger.error('{}：{}'.format(file_name, e))
+
