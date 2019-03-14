@@ -289,5 +289,5 @@ def save_img(in_args):
         bmps_logger.error('{}：{}'.format(file_name, e))
     except Exception as e:
         bmps_logger.error('{}：{}'.format(file_name, e))
-    time.sleep(2)
+    # time.sleep(2)
 
