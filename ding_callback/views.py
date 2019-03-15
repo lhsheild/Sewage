@@ -5,11 +5,11 @@ import os
 import urllib.request
 import socket
 import datetime
-import logging
 from concurrent.futures import ThreadPoolExecutor
-bmps_logger = logging.getLogger('bmps_callback')
-
 import requests
+import logging
+logger = logging.getLogger('sewage views')
+
 from django.shortcuts import HttpResponse
 
 from lib import crypto
@@ -74,13 +74,14 @@ def get_bms_callback(request):
             elif msg.get('EventType') == "bpms_instance_change" and msg.get('result') == 'agree' and msg.get(
                     'processCode') in my_setting.process_code_lst:
                 bpms_id = msg.get('processInstanceId')
-                bmps_logger.info('获取审批回调，实例ID为：{}'.format(bpms_id))
+                # bmps_logger.info('获取审批回调，实例ID为：{}'.format(bpms_id))
                 bpms_code = msg.get('processCode')
                 get_bpms_data_by_bpmsID(bpms_id, bpms_code)
-                print('msg : ', msg)
+                # print('msg : ', msg)
                 # print('key : ', msg)
                 # print('buf : ', buf)
         # print('完成回调数据同步')
+        # print(111)
         return HttpResponse(None)
     else:
         print('GET:', request.GET)
@@ -166,6 +167,8 @@ def func_container(data_dic):
     date = datetime.datetime(int(year_s), int(mon_s), int(day_s)).date()  # 检测日期/采样日期
     is_monitor = 1  # 是否监测，1为监测
     not_monitor_reason = None  # 无法监测原因
+    file_path = my_setting.img_folder_path
+    save_path = '{}{}{}{}{}{}{}'.format(file_path, os.sep, year_s, os.sep, mon_s, os.sep, day_s)
 
     exterior_photo_link_lst = json.loads(all_data[3].get('value'))  # 钉钉回调的外景照链接
     if exterior_photo_link_lst is not None:
@@ -270,24 +273,35 @@ def save_img(in_args):
         # 下载方法1
         # urllib.request.urlretrieve(img_url, filename=filename)
         # 下载方法2
-        try:
-            urllib.request.urlretrieve(img_url, filename=filename)
-        except socket.timeout:
-            count = 1
-            while count <= 5:
-                try:
-                    urllib.request.urlretrieve(img_url, filename=filename)
-                    break
-                except socket.timeout:
-                    err_info = 'Reloading for %d time' % count if count == 1 else 'Reloading for %d times' % count
-                    print(err_info)
-                    count += 1
-            if count > 5:
-                print("downloading picture fialed!")
+        # try:
+        #         #     urllib.request.urlretrieve(img_url, filename=filename)
+        #         # except socket.timeout:
+        #         #     count = 1
+        #         #     while count <= 5:
+        #         #         try:
+        #         #             urllib.request.urlretrieve(img_url, filename=filename)
+        #         #             break
+        #         #         except socket.timeout:
+        #         #             err_info = 'Reloading for %d time' % count if count == 1 else 'Reloading for %d times' % count
+        #         #             print(err_info)
+        #         #             count += 1
+        #         #     if count > 5:
+        #         #         print("downloading picture fialed!")
+        # 下载方法3
+        r = requests.get(img_url, stream=True)
+        with open(filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024*1024):
+                if chunk:
+                    f.write(chunk)
+        r.close()
+        # print("downloading picture succed!")
+        logger.info("{} downloading picture succed!".format(img_url))
 
     except IOError as e:
-        bmps_logger.error('{}：{}'.format(file_name, e))
+        # print(e)
+        logger.error('{}：{}'.format(file_name, e))
     except Exception as e:
-        bmps_logger.error('{}：{}'.format(file_name, e))
+        # print(e)
+        logger.error('{}：{}'.format(file_name, e))
     # time.sleep(2)
 

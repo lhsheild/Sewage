@@ -34,5 +34,7 @@ token = '123456'
 # 项目路径
 # project_path = os.path.dirname(os.getcwd())
 project_path = os.getcwd()
+# 媒体文件路径
+media_path = os.path.join(project_path, 'media')
 # 图片存储路径
-img_folder_path = os.path.join(project_path, 'img')
+img_folder_path = os.path.join(media_path, 'img')

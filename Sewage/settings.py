@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'q@l5%r4uqh@fxe$+k77^6zdwxer0qh$q5p6bpdl5m1inab$a)m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*',]
 
@@ -126,5 +126,79 @@ USE_TZ = False
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+MEDIA_URL = '/media/'  #访问的前缀链接
+MEDIA_ROOT = os.path.join(BASE_DIR, '../media')  #存放文件的具体位置
 
 # 日志
+ADMINS = (
+    ('admin', '403613912@qq.com'),
+)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = '2693022425@qq.com'
+EMAIL_HOST_PASSWORD = 'lh911016'
+EMAIL_USE_SSL = True
+EMAIL_SUBJECT_PREFIX = '[django] '
+EMAIL_TIMEOUT = 3
+DEFAULT_FROM_EMAIL = SERVER_EMAIL = EMAIL_HOST_USER
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'filters': {
+#         'request_id': {  # 自定义的filter
+#             '()': 'log_request_id.filters.RequestIDFilter'
+#         },
+#         'require_debug_false': {
+#             '()': 'django.utils.log.RequireDebugFalse',
+#         }
+#     },
+#     'formatters': {
+#         'standard': {
+#             'format': '%(levelname)s [%(asctime)s] [%(request_id)s] %(filename)s-%(funcName)s-%(lineno)s: %(message)s'  # 这里使用filter request_id里的request_id字段
+#         },
+#         'default': {
+#             'format': '%(levelname)s [%(asctime)s] %(name)s: %(message)s'
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'filters': ['request_id'],  # 这里使用上面的filter: request_id
+#             'formatter': 'standard',  # 这里使用上面的formatter: standard
+#         },
+#         'file': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
+#           'level': 'INFO',
+#           'class': 'logging.handlers.RotatingFileHandler',
+#           'filename': os.path.join(BASE_DIR, 'debug.log'),  # 日志输出文件
+#           'maxBytes': 1024*1024*5,  # 文件大小
+#           'backupCount': 5,  # 备份份数
+#           'formatter': 'default',  # 使用哪种formatters日志格式
+#          },
+#         'mail_admins': {
+#             'level': 'ERROR',
+#             'class': 'django.utils.log.AdminEmailHandler',
+#             'filters': ['require_debug_false'],
+#             'include_html': True,
+#         }
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file'],  # 这里使用上面的handler: console
+#             'level': 'INFO',
+#             'propagate': True,
+#         },
+#         'django.request': {
+#             'handlers': ['file', 'mail_admins'],
+#             'level': 'INFO',
+#             'propagate': False
+#         },
+#         'project.app': {
+#             'handlers': ['file', 'mail_admins'],
+#             'level': 'INFO',
+#             'propagate': True
+#         }
+#     }
+# }
