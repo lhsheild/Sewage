@@ -28,5 +28,5 @@ urlpatterns = [
     url(r'^check_callback_api/', callback_views.check_callback_api),
     # 更新回调接口
     url(r'^update_callback_api/', callback_views.update_callback_api),
-    # url(r'^admin/', admin.site.urls),
+    url(r'^admin/', admin.site.urls),
 ]
