@@ -81,7 +81,7 @@ DATABASES = {
         'NAME': 'sewage',  # 数据库名字(需要先创建)
         'USER': 'postgres',  # 登录用户名
         'PASSWORD': '123456',  # 密码
-        'HOST': '',  # 数据库IP地址,留空默认为localhost
+        'HOST': '192.168.0.147',  # 数据库IP地址,留空默认为localhost
         'PORT': '5432',  # 端口
     }
 }
@@ -124,7 +124,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_ROOT = [os.path.join(BASE_DIR, 'static')]
 
 MEDIA_URL = '/media/'  #访问的前缀链接
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media')  #存放文件的具体位置

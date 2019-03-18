@@ -8,6 +8,7 @@ import datetime
 from concurrent.futures import ThreadPoolExecutor
 import requests
 import logging
+
 logger = logging.getLogger('sewage views')
 
 from django.shortcuts import HttpResponse
@@ -261,7 +262,7 @@ def save_img(in_args):
     img_url = in_args[0]
     file_name = in_args[1]
     upload_time = in_args[2]
-    file_path =in_args[3]   # my_setting.img_folder_path
+    file_path = in_args[3]  # my_setting.img_folder_path
     year_s, mon_s, day_s = upload_time.split(' ')[0].split('-')
     save_path = '{}{}{}{}{}{}{}'.format(file_path, os.sep, year_s, os.sep, mon_s, os.sep, day_s)
     try:
@@ -290,7 +291,7 @@ def save_img(in_args):
         # 下载方法3
         r = requests.get(img_url, stream=True)
         with open(filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024*1024):
+            for chunk in r.iter_content(chunk_size=1024 * 1024):
                 if chunk:
                     f.write(chunk)
         r.close()
@@ -304,4 +305,3 @@ def save_img(in_args):
         # print(e)
         logger.error('{}：{}'.format(file_name, e))
     # time.sleep(2)
-
