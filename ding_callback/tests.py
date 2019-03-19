@@ -5,7 +5,7 @@ import json
 import datetime
 
 # Create your tests here.
-upload_time = json.loads(data.get('process_instance').get('form_component_values')[3].get('value'))[0]
+# upload_time = json.loads(data.get('process_instance').get('form_component_values')[3].get('value'))[0]
 data = {'errcode': 0, 'process_instance': {'attached_process_instance_ids': [], 'biz_action': 'NONE',
                                            'business_id': '201903142026000439544', 'cc_userids': ['2504294407695839'],
                                            'create_time': '2019-03-14 20:26:44', 'finish_time': '2019-03-14 20:26:51',
@@ -62,44 +62,44 @@ def fun_circle():
 
 
 if __name__ == '__main__':
-    # 容器法
-    process_code_container = 'PROC-ELYJ1A4W-7WJ39FFR3417CDU1EEOZ2-D8YFWXSJ-2'
-    # 流速法-圆管
-    process_code_circle = 'PROC-0KYJJ30V-NXJ3PSN611HAPDGJ4UHZ1-9OW5YXSJ-5'
-    # 流速法-方渠
-    process_code_square = 'PROC-JFYJ09RV-68J3QPEB5YVCH8A5I0GM2-I01DYXSJ-L'
-    # 仪器法
-    process_code_machine = 'PROC-FFYJ5P8V-AYJ3732800LIXDXMYTIA3-ZU1GYXSJ-2'
-    # 无法监测
-    process_code_unable = 'PROC-ELYJ1A4W-SXJ37TP95QVKM4F1BV143-L84IYXSJ-4'
+    # # 容器法
+    # process_code_container = 'PROC-ELYJ1A4W-7WJ39FFR3417CDU1EEOZ2-D8YFWXSJ-2'
+    # # 流速法-圆管
+    # process_code_circle = 'PROC-0KYJJ30V-NXJ3PSN611HAPDGJ4UHZ1-9OW5YXSJ-5'
+    # # 流速法-方渠
+    # process_code_square = 'PROC-JFYJ09RV-68J3QPEB5YVCH8A5I0GM2-I01DYXSJ-L'
+    # # 仪器法
+    # process_code_machine = 'PROC-FFYJ5P8V-AYJ3732800LIXDXMYTIA3-ZU1GYXSJ-2'
+    # # 无法监测
+    # process_code_unable = 'PROC-ELYJ1A4W-SXJ37TP95QVKM4F1BV143-L84IYXSJ-4'
+    #
+    # # 需要回调的审批流程
+    # process_code_lst = [(process_code_container, '容器法'), (process_code_circle, '圆管'), (process_code_square, '方渠'),
+    #                     (process_code_machine, '仪器'),
+    #                     (process_code_unable, '无法监测')]
+    #
+    # process_code_dic = {process_code_container: 'fun_container', process_code_circle: 'fun_circle'}
+    # for i in process_code_dic:
+    #     # print(i)
+    #     getattr(sys.modules[__name__], process_code_dic[i])()
+    #
+    #
+    # def fun_container():
+    #     print('容器法')
+    #
+    #
+    # def fun_circle():
+    #     print('圆管')
 
-    # 需要回调的审批流程
-    process_code_lst = [(process_code_container, '容器法'), (process_code_circle, '圆管'), (process_code_square, '方渠'),
-                        (process_code_machine, '仪器'),
-                        (process_code_unable, '无法监测')]
 
-    process_code_dic = {process_code_container: 'fun_container', process_code_circle: 'fun_circle'}
-    for i in process_code_dic:
-        # print(i)
-        getattr(sys.modules[__name__], process_code_dic[i])()
-
-
-    def fun_container():
-        print('容器法')
-
-
-    def fun_circle():
-        print('圆管')
-
-
-    print(data.get('process_instance').get('title').split('提交')[0])
+    # print(data.get('process_instance').get('title').split('提交')[0])
 
     # m_s = '12:30'
     # hour_s, min_s = m_s.split(':')
     # monitor_time = datetime.datetime(int(hour_s), int(min_s))
     # print(type(monitor_time), monitor_time)
 
-    t_lst = json.loads(data.get('process_instance').get('form_component_values')[2].get('value'))
+    # t_lst = json.loads(data.get('process_instance').get('form_component_values')[2].get('value'))
     # t_s = t_lst[0]
     # t_s = t_s.split(' ')
     # # print(t_s)
@@ -110,8 +110,8 @@ if __name__ == '__main__':
     # print(type(d_time), d_time)
     # print(type(d_time.time()),d_time.time())
     # print(type(d_time.date()), d_time.date())
-    t_data = data.get('process_instance').get('form_component_values')[18].get('value')
-    print(type(t_data), t_data)
+    # t_data = data.get('process_instance').get('form_component_values')[18].get('value')
+    # print(type(t_data), t_data)
 
     # t = {'name': '监测点工作照', 'value': 'null'}
     # print(type(t.get(json.loads(t.get('value')))))
@@ -127,3 +127,9 @@ if __name__ == '__main__':
     # # t3 = {'name': '监测点', 'value': '测试'}
     # # print(type(json.loads(t3.get('value'))), json.loads(t3.get('value'))[1])
     # print(json.loads('null'))
+
+    import requests
+
+    files = {'file': open(r'E:\Projects\Python_Projects\Sewage\img\2019\03\14\测试_sample_0.jpg', 'rb')}
+    r = requests.post('http://192.168.8.160:8000/upload', files=files)
+    print(r)

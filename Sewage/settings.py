@@ -78,11 +78,11 @@ WSGI_APPLICATION = 'Sewage.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'sewage',  # 数据库名字(需要先创建)
-        'USER': 'postgres',  # 登录用户名
-        'PASSWORD': '123456',  # 密码
-        'HOST': '192.168.0.147',  # 数据库IP地址,留空默认为localhost
-        'PORT': '5432',  # 端口
+        'NAME': 'sewage_test',
+        'USER':'postgres',
+        'PASSWORD':'lh18178007095',
+        'HOST':'113.16.255.12',
+        'PORT':'11011'
     }
 }
 
