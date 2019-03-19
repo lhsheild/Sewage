@@ -9,7 +9,7 @@ class MonitorPoint(models.Model):
     geophysical_point = models.CharField('物探点号', max_length=64, unique=True)
     is_monitor = models.IntegerField('是否监测')
     not_monitor_reason = models.CharField('无法监测原因', max_length=128)
-    work_function = models.IntegerField('监测方法', max_length=32)
+    work_function = models.IntegerField('监测方法')  # 0/1/2/3/4 容器/圆管/方渠/仪器/无法监测
     exterior_photo = models.CharField('外景照', max_length=128)
     water_flow_photo = models.CharField('水流照', max_length=128)
 
@@ -26,7 +26,7 @@ class MonitorPoint(models.Model):
 
 class SampleInfo(models.Model):
     id = models.AutoField(primary_key=True)
-    monitor_point = models.ForeignKey(to='MonitorPoint')
+    monitor_point = models.ForeignKey(to='MonitorPoint', related_name='sample')
     people = models.CharField('采样者', max_length=32)
 
     sample_date = models.DateField('采样日期', max_length=32)
@@ -56,7 +56,7 @@ class SampleInfo(models.Model):
 
 class FlowInfo(models.Model):
     id = models.AutoField(primary_key=True)
-    monitor_point = models.ForeignKey(to='MonitorPoint')
+    monitor_point = models.ForeignKey(to='MonitorPoint', related_name='flowinfo')
     people = models.CharField('监测者', max_length=32)
 
     flow_date = models.DateField('流量监测日期', max_length=32)
