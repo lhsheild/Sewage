@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block page-main %}
+
+    <div class="container">
+        <div class="page-header">
+            <h1>回调信息</h1>
+        </div>
+        <p class="lead">回调URL：{{ callback_url }}</p>
+        <p class="lead">监听事件：{{ callback_tag }}</p>
+        <p>...</p>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="text-muted">有问题联系ZXJ.</p>
+        </div>
+    </footer>
+
+{% endblock %}

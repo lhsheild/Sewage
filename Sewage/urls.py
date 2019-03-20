@@ -19,16 +19,18 @@ from ding_callback import views as callback_views
 
 urlpatterns = [
     # 注册回调
-    url(r'^register_callback/', callback_views.register_callback),
+    url(r'^register_callback/$', callback_views.register_callback),
     # 获取回调
-    url(r'^get_bms_callback/', callback_views.get_bms_callback),
+    url(r'^get_bms_callback/$', callback_views.get_bms_callback),
     # 获取失败回调
-    url(r'^get_failed_callback/', callback_views.get_failed_callback),
+    url(r'^get_failed_callback/$', callback_views.get_failed_callback),
     # 查询回调接口
-    url(r'^check_callback_api/', callback_views.check_callback_api),
+    url(r'^check_callback_api/$', callback_views.check_callback_api),
     # 更新回调接口
-    url(r'^update_callback_api/', callback_views.update_callback_api),
+    url(r'^update_callback_api/$', callback_views.update_callback_api),
     
     
     url(r'^admin/', admin.site.urls),
+    url(r'^$', callback_views.index),
 ]
+

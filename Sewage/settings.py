@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
@@ -25,8 +24,12 @@ SECRET_KEY = 'q@l5%r4uqh@fxe$+k77^6zdwxer0qh$q5p6bpdl5m1inab$a)m'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*',]
+ALLOWED_HOSTS = ['*', ]
 
+### 因为消息队列为rabbitmq，所以如下配置
+CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672'
+### 选用django自带的orm作为result backend
+CELERY_RESULT_BACKEND = 'django-db'
 
 # Application definition
 
@@ -38,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ding_callback.apps.DingCallbackConfig',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -65,12 +69,14 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'builtins': [
+                'django.templatetags.static'
+            ],
         },
     },
 ]
 
 WSGI_APPLICATION = 'Sewage.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -79,13 +85,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'sewage_test',
-        'USER':'postgres',
-        'PASSWORD':'lh18178007095',
-        'HOST':'113.16.255.12',
-        'PORT':'11011'
+        'USER': 'postgres',
+        'PASSWORD': 'lh18178007095',
+        'HOST': '113.16.255.12',
+        'PORT': '11011'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -105,7 +110,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -119,86 +123,14 @@ USE_L10N = True
 
 USE_TZ = False
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_ROOT = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-MEDIA_URL = '/media/'  #访问的前缀链接
-MEDIA_ROOT = os.path.join(BASE_DIR, '../media')  #存放文件的具体位置
-
-# 日志
-ADMINS = (
-    ('admin', '403613912@qq.com'),
-)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.qq.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = '2693022425@qq.com'
-EMAIL_HOST_PASSWORD = 'lh911016'
-EMAIL_USE_SSL = True
-EMAIL_SUBJECT_PREFIX = '[django] '
-EMAIL_TIMEOUT = 3
-DEFAULT_FROM_EMAIL = SERVER_EMAIL = EMAIL_HOST_USER
-
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'filters': {
-#         'request_id': {  # 自定义的filter
-#             '()': 'log_request_id.filters.RequestIDFilter'
-#         },
-#         'require_debug_false': {
-#             '()': 'django.utils.log.RequireDebugFalse',
-#         }
-#     },
-#     'formatters': {
-#         'standard': {
-#             'format': '%(levelname)s [%(asctime)s] [%(request_id)s] %(filename)s-%(funcName)s-%(lineno)s: %(message)s'  # 这里使用filter request_id里的request_id字段
-#         },
-#         'default': {
-#             'format': '%(levelname)s [%(asctime)s] %(name)s: %(message)s'
-#         },
-#     },
-#     'handlers': {
-#         'console': {
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#             'filters': ['request_id'],  # 这里使用上面的filter: request_id
-#             'formatter': 'standard',  # 这里使用上面的formatter: standard
-#         },
-#         'file': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
-#           'level': 'INFO',
-#           'class': 'logging.handlers.RotatingFileHandler',
-#           'filename': os.path.join(BASE_DIR, 'debug.log'),  # 日志输出文件
-#           'maxBytes': 1024*1024*5,  # 文件大小
-#           'backupCount': 5,  # 备份份数
-#           'formatter': 'default',  # 使用哪种formatters日志格式
-#          },
-#         'mail_admins': {
-#             'level': 'ERROR',
-#             'class': 'django.utils.log.AdminEmailHandler',
-#             'filters': ['require_debug_false'],
-#             'include_html': True,
-#         }
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],  # 这里使用上面的handler: console
-#             'level': 'INFO',
-#             'propagate': True,
-#         },
-#         'django.request': {
-#             'handlers': ['file', 'mail_admins'],
-#             'level': 'INFO',
-#             'propagate': False
-#         },
-#         'project.app': {
-#             'handlers': ['file', 'mail_admins'],
-#             'level': 'INFO',
-#             'propagate': True
-#         }
-#     }
-# }
+MEDIA_URL = '/media/'  # 访问的前缀链接
+MEDIA_ROOT = os.path.join(BASE_DIR, '../media')  # 存放文件的具体位置

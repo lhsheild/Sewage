@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block page-main %}
+    <div class="container">
+        <div class="page-header">
+            <h1>污水信息</h1>
+        </div>
+        <p class="lead">监测点：{{ name }}</p>
+        <p class="lead">物探点号：{{ geophysical_point }}</p>
+        <p>检测/采样日期：{{ date }}</p>
+        <p>是否检测：{{ is_monitor }}</p>
+        <p>无法检测原因：{{ not_monitor_reason }}</p>
+        <p>外景照链接：{{ exterior_photo_link_lst }}</p>
+        <p>...</p>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="text-muted">有问题联系ZXJ.</p>
+        </div>
+    </footer>
+{% endblock %}
