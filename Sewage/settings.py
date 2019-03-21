@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ['*', ]
 CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672'
 ### 选用django自带的orm作为result backend
 CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_SERIALIZER = 'json' # 结果序列化方案
 
 # Application definition
 

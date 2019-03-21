@@ -66,6 +66,7 @@ def get_bms_callback(request):
         if crypto.check_callback_signature(my_setting.token, ret, signature, timestamp, nonce):
             msg, key, buf = crypto.decrypt(aes_key, ret)
             msg = json.loads(msg)
+            print(msg)
 
             # 加密SUCCESS,完成回调注册
             if msg.get('EventType') == "check_url":
@@ -85,17 +86,16 @@ def get_bms_callback(request):
                 bpms_id = msg.get('processInstanceId')
                 # bmps_logger.info('获取审批回调，实例ID为：{}'.format(bpms_id))
                 bpms_code = msg.get('processCode')
-                list = ['https://static.dingtalk.com/media/lADPBE1XX57MOe7NBnTNBDg_1080_1652.jpg',
-                        'https://static.dingtalk.com/media/lADPBE1XX6DgWUHNBnTNBDg_1080_1652.jpg',
-                        'https://static.dingtalk.com/media/lADPBE1XX59Fj0bNBnTNBDg_1080_1652.jpg',
-                        'https://static.dingtalk.com/media/lADPBE1XX6Dgkw7NBnTNBDg_1080_1652.jpg',
-                        'https://static.dingtalk.com/media/lADPBE1XX6DgWuLNBnTNBDg_1080_1652.jpg',
-                        'https://static.dingtalk.com/media/lADPBE1XX6Dg2OnNBnTNBDg_1080_1652.jpg']
-                save_img.delay(list)
+                # list = ['https://static.dingtalk.com/media/lADPBE1XX57MOe7NBnTNBDg_1080_1652.jpg',
+                #         'https://static.dingtalk.com/media/lADPBE1XX6DgWUHNBnTNBDg_1080_1652.jpg',
+                #         'https://static.dingtalk.com/media/lADPBE1XX59Fj0bNBnTNBDg_1080_1652.jpg',
+                #         'https://static.dingtalk.com/media/lADPBE1XX6Dgkw7NBnTNBDg_1080_1652.jpg',
+                #         'https://static.dingtalk.com/media/lADPBE1XX6DgWuLNBnTNBDg_1080_1652.jpg',
+                #         'https://static.dingtalk.com/media/lADPBE1XX6Dg2OnNBnTNBDg_1080_1652.jpg']
+                # save_img.delay(list)
                 # get_bpms_data_by_bpmsID(bpms_id, bpms_code)
-                # get_bpms_data_by_bpmsID.delay(bpms_id, bpms_code)
-
-                print("start running task")
+                c_task = get_bpms_data_by_bpmsID.delay(bpms_id, bpms_code)
+                print("start running task：{}".format(c_task.id))
     else:
         print('GET:', request.GET)
 
@@ -327,19 +327,6 @@ def func_container(data_dic):
     sample_odor = all_data[17].get('value')
     # 样品浊度
     sample_turbidity = all_data[18].get('value')
-
-
-def fun(blocknum, blocksize, totalsize):
-    """
-    blocknum:当前的块编号
-    blocksize:每次传输的块大小
-    totalsize:网页文件总大小
-    """
-    percent = blocknum * blocksize / totalsize
-    if percent > 1.0:
-        percent = 1.0
-    percent = percent * 100
-    print("download : %.2f%%" % (percent))
 
 
 # 下载图片
