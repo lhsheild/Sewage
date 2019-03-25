@@ -1,0 +1,114 @@
+{% extends 'infobase.html' %}
+
+{% block sample_block %}
+    active
+{% endblock %}
+
+{% block page-main %}
+    <div class="page-header">
+        <h1>流量信息
+            <small></small>
+        </h1>
+    </div>
+    <div class="panel panel-primary">
+        <!-- Default panel contents -->
+        <div class="panel-heading">监测点：{{ monitor.name }}<i class="fa fa-thumb-tack pull-right"></i></div>
+        <div class="panel-body">
+            <div class="row" style="margin-bottom: 15px">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search for...">
+                        <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">搜索</button>
+                                </span>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-md-4 -->
+            </div><!-- /.row -->
+
+            <table class="table table-bordered table-hover table-striped table-condensed">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="hidden">id</th>
+                    <th>监测人</th>
+                    <th>监测日期</th>
+                    <th>监测时间段</th>
+                    {% if monitor.work_function == 0 %}
+                        <th>监测时长1</th>
+                        <th>监测水量1</th>
+                        <th>监测时长2</th>
+                        <th>监测水量2</th>
+                        <th>监测时长3</th>
+                        <th>监测水量3</th>
+                    {% elif monitor.work_function == 1 %}
+                        <th>管径</th>
+                        <th>淤泥深度</th>
+                        <th>液位1</th>
+                        <th>瞬时流速1</th>
+                        <th>液位2</th>
+                        <th>瞬时流速2</th>
+                        <th>液位3</th>
+                        <th>瞬时流速3</th>
+                    {% elif monitor.work_function == 2 %}
+                        <th>渠宽</th>
+                        <th>液位1</th>
+                        <th>瞬时流速1</th>
+                        <th>液位2</th>
+                        <th>瞬时流速2</th>
+                        <th>液位3</th>
+                        <th>瞬时流速3</th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for  flow in flows %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="hidden">{{ flow.id }}</td>
+                        <td>{{ flow.people }}</td>
+                        <td>{{ flow.flow_date|date:"Y-m-d" }}</td>
+                        <td>{{ flow.flow_time|date:"H:i" }}</td>
+                        {% if monitor.work_function == 0 %}
+                            <td>{{ flow.time1 }}</td>
+                            <td>{{ flow.volume1 }}</td>
+                            <td>{{ flow.time2 }}</td>
+                            <td>{{ flow.volume2 }}</td>
+                            <td>{{ flow.time3 }}</td>
+                            <td>{{ flow.volume3 }}</td>
+                        {% elif monitor.work_function == 1 %}
+                            <td>{{ flow.diameter }}</td>
+                            <td>{{ flow.mud_depth }}</td>
+                            <td>{{ flow.cicle_lequid_level1 }}</td>
+                            <td>{{ flow.cicle_instantaneous_flow_rate1 }}</td>
+                            <td>{{ flow.cicle_lequid_level2 }}</td>
+                            <td>{{ flow.cicle_instantaneous_flow_rate2 }}</td>
+                            <td>{{ flow.cicle_lequid_level3 }}</td>
+                            <td>{{ flow.cicle_instantaneous_flow_rate3 }}</td>
+                        {% elif monitor.work_function == 2 %}
+                            <td>{{ flow.canal_width }}</td>
+                            <td>{{ flow.square_lequid_level1 }}</td>
+                            <td>{{ flow.square_instantaneous_flow_rate1 }}</td>
+                            <td>{{ flow.square_lequid_level2 }}</td>
+                            <td>{{ flow.square_instantaneous_flow_rate2 }}</td>
+                            <td>{{ flow.square_lequid_level3 }}</td>
+                            <td>{{ flow.square_instantaneous_flow_rate3 }}</td>
+                        {% endif %}
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">暂时没有数据哦~</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <nav aria-label="Page navigation" class="text-center">
+                <ul class="pagination">
+                    {% for i in total_page %}
+                        {{ i|safe }}
+                    {% endfor %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endblock %}

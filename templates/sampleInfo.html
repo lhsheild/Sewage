@@ -1,0 +1,102 @@
+{% extends 'infobase.html' %}
+
+{% block sample_block %}
+    active
+{% endblock %}
+
+{% block page-main %}
+    <div class="page-header">
+        <h1>样品信息
+            <small></small>
+        </h1>
+    </div>
+    <div class="panel panel-primary">
+        <!-- Default panel contents -->
+        <div class="panel-heading">采样点：{{ monitor.name }}<i class="fa fa-thumb-tack pull-right"></i></div>
+        <div class="panel-body">
+            <div class="row" style="margin-bottom: 15px">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search for...">
+                        <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">搜索</button>
+                                </span>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-md-4 -->
+            </div><!-- /.row -->
+
+            <table class="table table-bordered table-hover table-striped table-condensed">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="hidden">id</th>
+                    <th>采样人</th>
+                    <th>采样日期</th>
+                    <th>采样时间段</th>
+                    <th>样品编号</th>
+                    <th>样品颜色</th>
+                    <th>样品气味</th>
+                    <th>样品浊度</th>
+                    <th>悬浮物</th>
+                    <th>氨氮</th>
+                    <th>总磷</th>
+                    <th>总氮</th>
+                    <th>化学需氧量</th>
+                    <th>五日生化需氧量</th>
+                    <th>阴离子表面活性剂</th>
+                    <th>动植物油</th>
+                    <th>溶解氧</th>
+                    <th>流量</th>
+                    <th>透明度</th>
+                    <th>氧化还原电位</th>
+                    <th>易沉固体</th>
+                    <th>硫化物</th>
+                    <th>氰化物</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for  sample in samples %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="hidden">{{ sample.id }}</td>
+                        <td>{{ sample.people }}</td>
+                        <td>{{ sample.sample_date|date:"Y-m-d" }}</td>
+                        <td>{{ sample.sample_time|date:"H:i" }}</td>
+                        <td>{{ sample.sample_number }}</td>
+                        <td>{{ sample.sample_color }}</td>
+                        <td>{{ sample.sample_odor }}</td>
+                        <td>{{ sample.sample_turbidity }}</td>
+                        <td>{{ sample.SS }}</td>
+                        <td>{{ sample.NH3_N }}</td>
+                        <td>{{ sample.TP }}</td>
+                        <td>{{ sample.TN }}</td>
+                        <td>{{ sample.COD }}</td>
+                        <td>{{ sample.BOD }}</td>
+                        <td>{{ sample.AIS }}</td>
+                        <td>{{ sample.AFVO }}</td>
+                        <td>{{ sample.DO }}</td>
+                        <td>{{ sample.FLOW }}</td>
+                        <td>{{ sample.CR }}</td>
+                        <td>{{ sample.ORP }}</td>
+                        <td>{{ sample.SinkableS }}</td>
+                        <td>{{ sample.Sulfide }}</td>
+                        <td>{{ sample.Cyanide }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">暂时没有数据哦~</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <nav aria-label="Page navigation" class="text-center">
+                <ul class="pagination">
+                    {% for i in total_page %}
+                        {{ i|safe }}
+                    {% endfor %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endblock %}

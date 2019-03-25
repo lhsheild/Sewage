@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from ding_callback import views as callback_views
+from information import views as information_views
 
 urlpatterns = [
     # 注册回调
@@ -32,5 +35,15 @@ urlpatterns = [
     
     url(r'^admin/', admin.site.urls),
     url(r'^$', callback_views.index),
+    url(r'^index/$', callback_views.index),
+    url(r'^login/$', information_views.Login.as_view()),
+    url(r'^logout/$', information_views.Logout.as_view()),
+
+    # 查看监测点信息
+    url(r'monitor/$', information_views.MonitorInfo.as_view()),
+    url(r'sample/$', information_views.SampleInfo.as_view()),
+    url(r'flow/$', information_views.FlowInfo.as_view()),
+    url(r'photo/$', information_views.Photo.as_view()),
 ]
+urlpatterns+=static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

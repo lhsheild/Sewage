@@ -22,13 +22,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'q@l5%r4uqh@fxe$+k77^6zdwxer0qh$q5p6bpdl5m1inab$a)m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*', ]
 
-### 因为消息队列为rabbitmq，所以如下配置
+# 因为消息队列为rabbitmq，所以如下配置
 CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672'
-### 选用django自带的orm作为result backend
+# 选用django自带的orm作为result backend
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_SERIALIZER = 'json' # 结果序列化方案
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ding_callback.apps.DingCallbackConfig',
+    'information.apps.InformationConfig',
     'django_celery_results',
 ]
 
@@ -128,10 +129,9 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 MEDIA_URL = '/media/'  # 访问的前缀链接
 MEDIA_ROOT = os.path.join(BASE_DIR, '../media')  # 存放文件的具体位置
+
+APPEND_SLASH = True

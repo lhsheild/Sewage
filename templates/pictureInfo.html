@@ -1,0 +1,150 @@
+{% extends  'picturebase.html' %}
+
+{% block page_main %}
+    <div>
+        <!--BEGIN TITLE & BREADCRUMB PAGE-->
+        <div id="title-breadcrumb-option-demo" class="page-title-breadcrumb">
+            <div class="page-header pull-left">
+                <div class="page-title">监测点：{{ monitor.name }}</div>
+            </div>
+
+            <div class="btn btn-blue reportrange hide">
+                <i class="fa fa-calendar"></i>&nbsp;<span></span>&nbsp;report&nbsp;<i class="fa fa-angle-down"></i>
+                <input type="hidden" name="datestart"/>
+                <input type="hidden" name="endstart"/>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <!--END TITLE & BREADCRUMB PAGE-->
+        <!--BEGIN CONTENT-->
+        <div class="page-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="portlet box portlet-green">
+                        <div class="portlet-body">
+                            <div class="gallery-pages">
+                                <ul style="float: left;" class="list-filter list-unstyled">
+                                    <li data-filter="all" class="filter active">全部</li>
+                                    {% if monitor.work_function == 3 %}
+                                        <li data-filter=".status" class="filter">监测点现状</li>
+                                        <li data-filter=".probe" class="filter">探头</li>
+                                        <li data-filter=".machine" class="filter">仪器</li>
+                                        <li data-filter=".setup" class="filter">仪器设置</li>
+                                        <li data-filter=".work" class="filter">工作</li>
+                                    {% elif monitor.work_function == 4 %}
+                                        <li data-filter=".exterior" class="filter">外景</li>
+                                        <li data-filter=".water" class="filter">水流</li>
+                                    {% else %}
+                                        <li data-filter=".exterior" class="filter">外景</li>
+                                        <li data-filter=".water" class="filter">水流</li>
+                                        <li data-filter=".work" class="filter">工作</li>
+                                    {% endif %}
+                                </ul>
+
+                                <div class="clearfix"></div>
+                                <div class="row mix-grid">
+                                    {% for i in monitor.exterior_photo %}
+                                        <div class="col-md-3 mix xfs">
+                                            <div class="hover-effect">
+                                                <div class="img">
+                                                    <img src={{ i }} alt="" class="img-responsive"/>
+                                                </div>
+                                                <div class="info">
+                                                    <h3>外景照</h3><a href={{ i }} data-lightbox="image-1"
+                                                                   data-title="Image 1" class="mix-zoom"><i
+                                                        class="glyphicon glyphicon-search"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+
+
+                                    <div class="col-md-3 mix hzbjq">
+                                        <div class="hover-effect">
+                                            <div class="img">
+                                                <img src="images/hzbjq/1.jpg" alt="" class="img-responsive"/>
+                                            </div>
+                                            <div class="info">
+                                                <h3>火灾报警器</h3><a href="images/hzbjq/1.jpg" data-lightbox="image-1"
+                                                                 data-title="Image 1" class="mix-zoom"><i
+                                                    class="glyphicon glyphicon-search"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3 mix mhq">
+                                        <div class="hover-effect">
+                                            <div class="img">
+                                                <img src="images/mhq/1.jpg" alt="" class="img-responsive"/>
+                                            </div>
+                                            <div class="info">
+                                                <h3>灭火器</h3><a href="images/mhq/1.jpg" data-lightbox="image-1"
+                                                               data-title="Image 1" class="mix-zoom"><i
+                                                    class="glyphicon glyphicon-search"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 mix mhq">
+                                        <div class="hover-effect">
+                                            <div class="img">
+                                                <img src="images/mhq/2.jpg" alt="" class="img-responsive"/>
+                                            </div>
+                                            <div class="info">
+                                                <h3>灭火器</h3><a href="images/mhq/2.jpg" data-lightbox="image-2"
+                                                               data-title="Image 2" class="mix-zoom"><i
+                                                    class="glyphicon glyphicon-search"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 mix mhq">
+                                        <div class="hover-effect">
+                                            <div class="img">
+                                                <img src="images/mhq/3.jpg" alt="" class="img-responsive"/>
+                                            </div>
+                                            <div class="info">
+                                                <h3>灭火器</h3><a href="images/mhq/3.jpg" data-lightbox="image-3"
+                                                               data-title="Image 3" class="mix-zoom"><i
+                                                    class="glyphicon glyphicon-search"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3 mix plg">
+                                        <div class="hover-effect">
+                                            <div class="img">
+                                                <img src="images/plg/1.jpg" alt="" class="img-responsive"/>
+                                            </div>
+                                            <div class="info">
+                                                <h3>喷淋管</h3><a href="images/plg/1.jpg" data-lightbox="image-1"
+                                                               data-title="Image 1" class="mix-zoom"><i
+                                                    class="glyphicon glyphicon-search"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3 mix zdhwbjq">
+                                        <div class="hover-effect">
+                                            <div class="img">
+                                                <img src="images/zdhwbjq/1.jpg" alt="" class="img-responsive"/>
+                                            </div>
+                                            <div class="info">
+                                                <h3>火灾报警器</h3><a href="images/zdhwbjq/1.jpg" data-lightbox="image-1"
+                                                                 data-title="Image 1" class="mix-zoom"><i
+                                                    class="glyphicon glyphicon-search"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--END CONTENT-->
+    </div>
+{% endblock %}

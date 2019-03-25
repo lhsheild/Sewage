@@ -5,57 +5,71 @@
 {% block page-main %}
 
     <div class="container">
-        <div class="page-header">
-            <h1>黑臭水体信息管理系统</h1>
+        <div class="row">
+            <div class="col-sm-3 col-md-2 sidebar">
+                <ul class="nav nav-sidebar">
+                    <li class="{% block monitor_block %}{% endblock %}"><a href="/monitor/">监测点列表</a></li>
+                    <li class="{% block picture_block %}{% endblock %}"><a href="/picture/">照片信息</a></li>
+                    <li class="{% block sample_block %}{% endblock %}"><a href="/sample/">样品信息</a></li>
+                    <li class="{% block flow_block %}{% endblock %}"><a href="/flow/">流量信息</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <div class="page-header">
+                    <h1>黑臭水体信息管理系统</h1>
+                </div>
+                <p class="lead">IP：113.16.255.12</p>
+                <p class="lead">Port：11012</p>
+                <p><a href="/check_callback_api/">查询钉钉回调接口</a>/check_callback_api/</p>
+                <p><a href="/update_callback_api/">更新钉钉回调接口</a>/update_callback_api/</p>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>参数</th>
+                        <th>参数类型</th>
+                        <th>说明</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">access_token</th>
+                        <td>String</td>
+                        <td>调用接口凭证</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">call_back_tag</th>
+                        <td>Array[String]</td>
+                        <td>需要监听的事件类型</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">token</th>
+                        <td>String</td>
+                        <td> 加解密需要用到的token</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">aes_key</th>
+                        <td>String</td>
+                        <td> 数据加密密钥。用于回调数据的加密，长度固定为43个字符</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">url</th>
+                        <td>String</td>
+                        <td> 接收事件回调的url</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p>...</p>
+            </div>
+            <!--
+                        <footer class="footer">
+                            <div class="container">
+                                <p class="text-muted">有问题联系ZXJ.</p>
+                            </div>
+                        </footer>
+                        -->
         </div>
-        <p class="lead">IP：113.16.255.12</p>
-        <p class="lead">Port：11012</p>
-        <p><a href="/check_callback_api/">查询钉钉回调接口</a>/check_callback_api/</p>
-        <p><a href="/update_callback_api/">更新钉钉回调接口</a>/update_callback_api/</p>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>参数</th>
-                <th>参数类型</th>
-                <th>说明</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <th scope="row">access_token</th>
-                <td>String</td>
-                <td>调用接口凭证</td>
-            </tr>
-            <tr>
-                <th scope="row">call_back_tag</th>
-                <td>Array[String]</td>
-                <td>需要监听的事件类型</td>
-            </tr>
-            <tr>
-                <th scope="row">token</th>
-                <td>String</td>
-                <td> 加解密需要用到的token</td>
-            </tr>
-            <tr>
-                <th scope="row">aes_key</th>
-                <td>String</td>
-                <td> 数据加密密钥。用于回调数据的加密，长度固定为43个字符</td>
-            </tr>
-            <tr>
-                <th scope="row">url</th>
-                <td>String</td>
-                <td> 接收事件回调的url</td>
-            </tr>
-            </tbody>
-        </table>
-        <p>...</p>
     </div>
 
-    <footer class="footer">
-        <div class="container">
-            <p class="text-muted">有问题联系ZXJ.</p>
-        </div>
-    </footer>
 
 {% endblock %}
 

@@ -1,12 +1,5 @@
-from ding_callback.tasks import get_bpms_data_by_bpmsID, save_img
+from ding_callback.tasks import get_bpms_data_by_bpmsID
 import json
-import time
-from sys import modules
-import os
-import urllib.request
-import socket
-import datetime
-from concurrent.futures import ThreadPoolExecutor
 import requests
 import logging
 logger = logging.getLogger('sewage views')
@@ -16,11 +9,10 @@ from django.shortcuts import HttpResponse, render
 from lib import crypto
 from conf import my_setting
 from ding_callback import models as ding_models
+from django.views import View
 
 
 # Create your views here.
-
-
 def index(request):
     return render(request, 'index.html')
 
@@ -145,4 +137,3 @@ def update_callback_api(request):
     get_info = requests.post(url, data=data).json()
     print(get_info)
     return HttpResponse('更新回调接口')
-

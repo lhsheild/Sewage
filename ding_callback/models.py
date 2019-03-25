@@ -56,7 +56,7 @@ class SampleInfo(models.Model):
 
 class FlowInfo(models.Model):
     id = models.AutoField(primary_key=True)
-    monitor_point = models.ForeignKey(to='MonitorPoint', related_name='flowinfo')
+    monitor_point = models.ForeignKey(to='MonitorPoint', related_name='flow')
     people = models.CharField('监测者', max_length=32)
 
     flow_date = models.DateField('流量监测日期', max_length=32)

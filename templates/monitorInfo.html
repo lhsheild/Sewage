@@ -1,0 +1,102 @@
+{% extends 'infobase.html' %}
+
+{% block monitor_block %}
+    active
+{% endblock %}
+
+{% block page-main %}
+    <div class="page-header">
+        <h1>监测点列表
+            <small></small>
+        </h1>
+    </div>
+    <div class="panel panel-primary">
+        <!-- Default panel contents -->
+        <div class="panel-heading">监测点<i class="fa fa-thumb-tack pull-right"></i></div>
+        <div class="panel-body">
+            <div class="row" style="margin-bottom: 15px">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search for...">
+                        <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">搜索</button>
+                                </span>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-md-4 -->
+            </div><!-- /.row -->
+
+            <table class="table table-bordered table-hover table-striped table-condensed">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="hidden">id</th>
+                    <th>监测点号</th>
+                    <th>物探点号</th>
+                    <th>监测方法</th>
+                    <th>照片</th>
+                    <th>样品</th>
+                    <th>流量</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for  monitor in monitors %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="hidden">{{ monitor.id }}</td>
+                        <td>{{ monitor.name }}</td>
+                        <td>{{ monitor.geophysical_point }}</td>
+                        <td>
+                            {% if monitor.work_function == 0 %}
+                                容器法
+                            {% elif monitor.work_function == 1 %}
+                                流速法(圆管)
+                            {% elif monitor.work_function == 2 %}
+                                流速法(方渠)
+                            {% elif monitor.work_function == 3 %}
+                                仪器法
+                            {% elif monitor.work_function == 4 %}
+                                无法监测
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a class="btn btn-primary" href="/photo/?id={{ monitor.id }}"><i
+                                    class="fa fa-trash-o">照片</i></a>
+                        </td>
+                        <td>
+                            {% if monitor.work_function == 4 %}
+                                <a class="btn btn-danger disabled" href="#"><i
+                                        class="fa fa-trash-o">样品</i></a>
+                            {% else %}
+                                <a class="btn btn-success" href="/sample/?id={{ monitor.id }}"><i
+                                        class="fa fa-trash-o">样品</i></a>
+                            {% endif %}
+
+                        </td>
+                        <td>
+                            {% if monitor.work_function == 3 or  monitor.work_function == 4 %}
+                                <a class="btn btn-danger disabled" href="#={{ monitor.id }}"><i
+                                        class="fa fa-trash-o">流量</i></a>
+                            {% else %}
+                                <a class="btn btn-info" href="/flow/?id={{ monitor.id }}"><i
+                                        class="fa fa-trash-o">流量</i></a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">暂时没有数据哦~</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <nav aria-label="Page navigation" class="text-center">
+                <ul class="pagination">
+                    {% for i in total_page %}
+                        {{ i|safe }}
+                    {% endfor %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endblock %}

@@ -742,9 +742,7 @@ def save_img(in_args):
             print(save_path)
         file_suffix = os.path.splitext(img_url)[1]
         filename = '{}{}{}{}'.format(save_path, os.sep, file_name, file_suffix)
-        # 下载方法1
-        # urllib.request.urlretrieve(img_url, filename=filename)
-        # 下载方法3
+
         r = requests.get(img_url, stream=True)
         with open(filename, 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024 * 1024):
@@ -753,7 +751,6 @@ def save_img(in_args):
         r.close()
         return filename
         print("downloading picture succedd!， {}".format(filename))
-
     except IOError as e:
         print(e)
     except Exception as e:
