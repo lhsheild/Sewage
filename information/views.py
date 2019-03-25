@@ -96,32 +96,74 @@ class FlowInfo(View):  # 流量信息查询
 class Photo(View):
     def get(self, request):
         import json
-        from lib import common
+        from lib.common import list_split
         id = request.GET.get('id')
         monitor_obj = monitor_model.MonitorPoint.objects.filter(id=id)
+
+        exterior_photo = []
+        water_flow_photo = []
+        work_photo = []
+        status_photo = []
+        probe_photo = []
+        machine_photo = []
+        setup_photo = []
         if monitor_obj:
             monitor_obj = monitor_obj.first()
         else:
             monitor_obj = monitor_model.MonitorPoint.objects.all().first()
+
+        sample_photo = monitor_obj.sample.all().values_list('sample_photo', flat=True).distinct()
+        sample_photo = list(sample_photo)
+        lst = []
+        for i in sample_photo:
+            if i:
+                i = json.loads(i)
+                lst.extend(i)
+        sample_photo = lst
+
         if monitor_obj.exterior_photo:
             exterior_photo = json.loads(monitor_obj.exterior_photo)
+            exterior_photo = list_split(exterior_photo)
             print('exterior_photo:', exterior_photo)
         if monitor_obj.water_flow_photo:
             water_flow_photo = json.loads(monitor_obj.water_flow_photo)
+            water_flow_photo = list_split(water_flow_photo)
             print('water_flow_photo:', water_flow_photo)
         if monitor_obj.work_photo:
             work_photo = json.loads(monitor_obj.work_photo)
+            work_photo = list_split(work_photo)
             print('work_photo:', work_photo)
         if monitor_obj.status_photo:
             status_photo = json.loads(monitor_obj.status_photo)
+            status_photo = list_split(status_photo)
             print('status_photo:', status_photo)
         if monitor_obj.probe_photo:
             probe_photo = json.loads(monitor_obj.probe_photo)
+            probe_photo = list_split(probe_photo)
             print('probe_photo:', probe_photo)
         if monitor_obj.machine_photo:
             machine_photo = json.loads(monitor_obj.machine_photo)
+            machine_photo = list_split(machine_photo)
             print('machine_photo:', machine_photo)
         if monitor_obj.setup_photo:
             setup_photo = json.loads(monitor_obj.setup_photo)
+            setup_photo = list_split(setup_photo)
             print('setup_photo:', setup_photo)
-        return render(request, 'pictureInfo.html', {'monitor': monitor_obj})
+        if monitor_obj.setup_photo:
+            setup_photo = json.loads(monitor_obj.setup_photo)
+            setup_photo = list_split(setup_photo)
+            print('setup_photo:', setup_photo)
+        if sample_photo:
+            sample_photo = list_split(sample_photo)
+            print(sample_photo)
+        return render(request, 'pictureInfo.html', {
+            'monitor': monitor_obj,
+            'exterior_photo': exterior_photo,
+            'water_flow_photo': water_flow_photo,
+            'work_photo': work_photo,
+            'status_photo': status_photo,
+            'probe_photo': probe_photo,
+            'machine_photo': machine_photo,
+            'setup_photo': setup_photo,
+            'sample_photo': sample_photo
+        })

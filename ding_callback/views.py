@@ -42,8 +42,6 @@ def get_bms_callback(request):
     key = my_setting.corp_id
 
     if request.method == 'POST':
-        httpret = '1'
-        # print('body:', request.body)
         if request.POST:
             print('POST:', request.POST)
 

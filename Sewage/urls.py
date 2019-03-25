@@ -44,6 +44,5 @@ urlpatterns = [
     url(r'sample/$', information_views.SampleInfo.as_view()),
     url(r'flow/$', information_views.FlowInfo.as_view()),
     url(r'photo/$', information_views.Photo.as_view()),
-]
-urlpatterns+=static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

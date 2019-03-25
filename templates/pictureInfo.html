@@ -31,6 +31,7 @@
                                         <li data-filter=".machine" class="filter">仪器</li>
                                         <li data-filter=".setup" class="filter">仪器设置</li>
                                         <li data-filter=".work" class="filter">工作</li>
+                                        <li data-filter=".sample" class="filter">样品</li>
                                     {% elif monitor.work_function == 4 %}
                                         <li data-filter=".exterior" class="filter">外景</li>
                                         <li data-filter=".water" class="filter">水流</li>
@@ -38,106 +39,185 @@
                                         <li data-filter=".exterior" class="filter">外景</li>
                                         <li data-filter=".water" class="filter">水流</li>
                                         <li data-filter=".work" class="filter">工作</li>
+                                        <li data-filter=".sample" class="filter">样品</li>
                                     {% endif %}
                                 </ul>
 
                                 <div class="clearfix"></div>
                                 <div class="row mix-grid">
-                                    {% for i in monitor.exterior_photo %}
-                                        <div class="col-md-3 mix xfs">
-                                            <div class="hover-effect">
-                                                <div class="img">
-                                                    <img src={{ i }} alt="" class="img-responsive"/>
+                                    {% if monitor.work_function == 4 %}
+                                        {% for i in exterior_photo %}
+                                            <div class="col-md-3 mix exterior">
+                                                <div class="hover-effect">
+                                                    <div class="img">
+                                                        <img src={{ i }} alt="" class="img-responsive"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h3>外景照</h3><a href={{ i }} data-lightbox="image-1"
+                                                                       data-title="Image 1" class="mix-zoom"><i
+                                                            class="glyphicon glyphicon-search"></i></a>
+                                                    </div>
                                                 </div>
-                                                <div class="info">
-                                                    <h3>外景照</h3><a href={{ i }} data-lightbox="image-1"
-                                                                   data-title="Image 1" class="mix-zoom"><i
-                                                        class="glyphicon glyphicon-search"></i></a>
+                                            </div>
+                                        {% endfor %}
+
+                                        {% for i in water_flow_photo %}
+                                            <div class="col-md-3 mix water">
+                                                <div class="hover-effect">
+                                                    <div class="img">
+                                                        <img src={{ i }} alt="" class="img-responsive"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h3>水流照</h3><a href={{ i }} data-lightbox="image-1"
+                                                                       data-title="Image 1" class="mix-zoom"><i
+                                                            class="glyphicon glyphicon-search"></i></a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    {% endfor %}
-
-
-                                    <div class="col-md-3 mix hzbjq">
-                                        <div class="hover-effect">
-                                            <div class="img">
-                                                <img src="images/hzbjq/1.jpg" alt="" class="img-responsive"/>
+                                        {% endfor %}
+                                    {% elif monitor.work_function == 3 %}
+                                        {% for i in status_photo %}
+                                            <div class="col-md-3 mix status">
+                                                <div class="hover-effect">
+                                                    <div class="img">
+                                                        <img src={{ i }} alt="" class="img-responsive"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h3>监测点现状</h3><a href={{ i }} data-lightbox="image-1"
+                                                                         data-title="Image 1" class="mix-zoom"><i
+                                                            class="glyphicon glyphicon-search"></i></a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="info">
-                                                <h3>火灾报警器</h3><a href="images/hzbjq/1.jpg" data-lightbox="image-1"
-                                                                 data-title="Image 1" class="mix-zoom"><i
-                                                    class="glyphicon glyphicon-search"></i></a>
+                                        {% endfor %}
+                                        {% for i in probe_photo %}
+                                            <div class="col-md-3 mix probe">
+                                                <div class="hover-effect">
+                                                    <div class="img">
+                                                        <img src={{ i }} alt="" class="img-responsive"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h3>仪器探头</h3><a href={{ i }} data-lightbox="image-1"
+                                                                        data-title="Image 1" class="mix-zoom"><i
+                                                            class="glyphicon glyphicon-search"></i></a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="col-md-3 mix mhq">
-                                        <div class="hover-effect">
-                                            <div class="img">
-                                                <img src="images/mhq/1.jpg" alt="" class="img-responsive"/>
+                                        {% endfor %}
+                                        {% for i in machine_photo %}
+                                            <div class="col-md-3 mix machine">
+                                                <div class="hover-effect">
+                                                    <div class="img">
+                                                        <img src={{ i }} alt="" class="img-responsive"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h3>仪器主机</h3><a href={{ i }} data-lightbox="image-1"
+                                                                        data-title="Image 1" class="mix-zoom"><i
+                                                            class="glyphicon glyphicon-search"></i></a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="info">
-                                                <h3>灭火器</h3><a href="images/mhq/1.jpg" data-lightbox="image-1"
-                                                               data-title="Image 1" class="mix-zoom"><i
-                                                    class="glyphicon glyphicon-search"></i></a>
+                                        {% endfor %}
+                                        {% for i in setup_photo %}
+                                            <div class="col-md-3 mix setup">
+                                                <div class="hover-effect">
+                                                    <div class="img">
+                                                        <img src={{ i }} alt="" class="img-responsive"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h3>仪器设置</h3><a href={{ i }} data-lightbox="image-1"
+                                                                        data-title="Image 1" class="mix-zoom"><i
+                                                            class="glyphicon glyphicon-search"></i></a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 mix mhq">
-                                        <div class="hover-effect">
-                                            <div class="img">
-                                                <img src="images/mhq/2.jpg" alt="" class="img-responsive"/>
+                                        {% endfor %}
+                                        {% for i in work_photo %}
+                                            <div class="col-md-3 mix work">
+                                                <div class="hover-effect">
+                                                    <div class="img">
+                                                        <img src={{ i }} alt="" class="img-responsive"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h3>工作照</h3><a href={{ i }} data-lightbox="image-1"
+                                                                       data-title="Image 1" class="mix-zoom"><i
+                                                            class="glyphicon glyphicon-search"></i></a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="info">
-                                                <h3>灭火器</h3><a href="images/mhq/2.jpg" data-lightbox="image-2"
-                                                               data-title="Image 2" class="mix-zoom"><i
-                                                    class="glyphicon glyphicon-search"></i></a>
+                                        {% endfor %}
+                                        {% for i in sample_photo %}
+                                            <div class="col-md-3 mix sample">
+                                                <div class="hover-effect">
+                                                    <div class="img">
+                                                        <img src={{ i }} alt="" class="img-responsive"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h3>样品照</h3><a href={{ i }} data-lightbox="image-1"
+                                                                       data-title="Image 1" class="mix-zoom"><i
+                                                            class="glyphicon glyphicon-search"></i></a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 mix mhq">
-                                        <div class="hover-effect">
-                                            <div class="img">
-                                                <img src="images/mhq/3.jpg" alt="" class="img-responsive"/>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for i in exterior_photo %}
+                                            <div class="col-md-3 mix exterior">
+                                                <div class="hover-effect">
+                                                    <div class="img">
+                                                        <img src={{ i }} alt="" class="img-responsive"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h3>外景照</h3><a href={{ i }} data-lightbox="image-1"
+                                                                       data-title="Image 1" class="mix-zoom"><i
+                                                            class="glyphicon glyphicon-search"></i></a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="info">
-                                                <h3>灭火器</h3><a href="images/mhq/3.jpg" data-lightbox="image-3"
-                                                               data-title="Image 3" class="mix-zoom"><i
-                                                    class="glyphicon glyphicon-search"></i></a>
+                                        {% endfor %}
+                                        {% for i in water_flow_photo %}
+                                            <div class="col-md-3 mix water">
+                                                <div class="hover-effect">
+                                                    <div class="img">
+                                                        <img src={{ i }} alt="" class="img-responsive"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h3>水流照</h3><a href={{ i }} data-lightbox="image-1"
+                                                                       data-title="Image 1" class="mix-zoom"><i
+                                                            class="glyphicon glyphicon-search"></i></a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="col-md-3 mix plg">
-                                        <div class="hover-effect">
-                                            <div class="img">
-                                                <img src="images/plg/1.jpg" alt="" class="img-responsive"/>
+                                        {% endfor %}
+                                        {% for i in  work_photo %}
+                                            <div class="col-md-3 mix work">
+                                                <div class="hover-effect">
+                                                    <div class="img">
+                                                        <img src={{ i }} alt="" class="img-responsive"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h3>工作照</h3><a href={{ i }} data-lightbox="image-1"
+                                                                       data-title="Image 1" class="mix-zoom"><i
+                                                            class="glyphicon glyphicon-search"></i></a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="info">
-                                                <h3>喷淋管</h3><a href="images/plg/1.jpg" data-lightbox="image-1"
-                                                               data-title="Image 1" class="mix-zoom"><i
-                                                    class="glyphicon glyphicon-search"></i></a>
+                                        {% endfor %}
+                                        {% for i in sample_photo %}
+                                            <div class="col-md-3 mix sample">
+                                                <div class="hover-effect">
+                                                    <div class="img">
+                                                        <img src={{ i }} alt="" class="img-responsive"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h3>样品照</h3><a href={{ i }} data-lightbox="image-1"
+                                                                       data-title="Image 1" class="mix-zoom"><i
+                                                            class="glyphicon glyphicon-search"></i></a>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="col-md-3 mix zdhwbjq">
-                                        <div class="hover-effect">
-                                            <div class="img">
-                                                <img src="images/zdhwbjq/1.jpg" alt="" class="img-responsive"/>
-                                            </div>
-                                            <div class="info">
-                                                <h3>火灾报警器</h3><a href="images/zdhwbjq/1.jpg" data-lightbox="image-1"
-                                                                 data-title="Image 1" class="mix-zoom"><i
-                                                    class="glyphicon glyphicon-search"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
-
+                                        {% endfor %}
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>

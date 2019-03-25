@@ -132,6 +132,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 MEDIA_URL = '/media/'  # 访问的前缀链接
-MEDIA_ROOT = os.path.join(BASE_DIR, '../media')  # 存放文件的具体位置
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 存放文件的具体位置
 
 APPEND_SLASH = True
