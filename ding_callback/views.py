@@ -2,14 +2,14 @@ from ding_callback.tasks import get_bpms_data_by_bpmsID
 import json
 import requests
 import logging
+
 logger = logging.getLogger('sewage views')
 
 from django.shortcuts import HttpResponse, render
+from django.views.decorators.csrf import csrf_exempt
 
 from lib import crypto
 from conf import my_setting
-from ding_callback import models as ding_models
-from django.views import View
 
 
 # Create your views here.
@@ -18,6 +18,7 @@ def index(request):
 
 
 # 注册审批回调
+@csrf_exempt
 def register_callback(request):
     # 获取access_token
     appkey = my_setting.app_key
@@ -37,6 +38,7 @@ def register_callback(request):
 
 
 # 处理审批回调
+@csrf_exempt
 def get_bms_callback(request):
     aes_key = my_setting.aes_key
     key = my_setting.corp_id
@@ -85,6 +87,7 @@ def get_bms_callback(request):
     return HttpResponse(None)
 
 
+@csrf_exempt
 def get_failed_callback(request):
     # 获取access_token
     appkey = my_setting.app_key
@@ -103,6 +106,7 @@ def get_failed_callback(request):
     return HttpResponse('获取失败回调')
 
 
+@csrf_exempt
 def check_callback_api(request):
     # 获取access_token
     appkey = my_setting.app_key
@@ -118,6 +122,7 @@ def check_callback_api(request):
     return render(request, 'callback.html', {'callback_url': callback_url, 'callback_tag': callback_tag})
 
 
+@csrf_exempt
 def update_callback_api(request):
     # 获取access_token
     appkey = my_setting.app_key
@@ -127,7 +132,7 @@ def update_callback_api(request):
 
     # 更新回调接口
     url = 'https://oapi.dingtalk.com/call_back/update_call_back?access_token={}'.format(access_token)
-    data = {'call_back_tag': [ 'bpms_instance_change'],
+    data = {'call_back_tag': ['bpms_instance_change'],
             'token': my_setting.token,
             'aes_key': my_setting.aes_key,
             'url': 'http://lh.vaiwan.com/get_bms_callback/'}

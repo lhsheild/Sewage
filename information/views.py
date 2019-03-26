@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.views import View
+from django.utils.decorators import method_decorator
 
 from ding_callback import models as monitor_model
-from lib import login
+from lib.login import check_login
 
 
 # Create your views here.
@@ -16,24 +17,28 @@ class Login(View):
         if user == 'admin' and pwd == 'admin':
             next_url = request.GET.get('next')
             if next_url:
-                rep = redirect(next)
+                rep = redirect(next_url)
             else:
                 rep = redirect('/index/')
-            rep.set_signed_cookie('is_login', '1', salt='sewage')  # max_age=7*24*60*60（一周）
+            # rep.set_signed_cookie('is_login', '1', salt='sewage')  # max_age=7*24*60*60（一周）cookie
+            # 设置session
+            request.session['is_login'] = '1'
             return rep
 
 
 class Logout(View):
     def get(self, request):
-        rep = redirect('/login/')
-        rep.delete_cookie('is_login')
-        return rep
+        # rep = redirect('/login/')
+        # rep.delete_cookie('is_login')
+        request.session.flush()
+        return redirect('/login/')
 
     def post(self, request):
         pass
 
 
 class MonitorInfo(View):  # 监测点列表查询
+    @method_decorator(check_login)
     def get(self, request):
         from lib.mypage import Page
         p = request.GET.get('p')
@@ -48,6 +53,7 @@ class MonitorInfo(View):  # 监测点列表查询
 
 
 class SampleInfo(View):  # 样品信息查询
+    @method_decorator(check_login)
     def get(self, request):
         id = request.GET.get('id')
         monitor_obj = monitor_model.MonitorPoint.objects.filter(id=id)
@@ -71,6 +77,7 @@ class SampleInfo(View):  # 样品信息查询
 
 
 class FlowInfo(View):  # 流量信息查询
+    @method_decorator(check_login)
     def get(self, request):
         id = request.GET.get('id')
         monitor_obj = monitor_model.MonitorPoint.objects.filter(id=id)
@@ -94,6 +101,7 @@ class FlowInfo(View):  # 流量信息查询
 
 
 class Photo(View):
+    @method_decorator(check_login)
     def get(self, request):
         import json
         from lib.common import list_split
@@ -124,38 +132,38 @@ class Photo(View):
         if monitor_obj.exterior_photo:
             exterior_photo = json.loads(monitor_obj.exterior_photo)
             exterior_photo = list_split(exterior_photo)
-            print('exterior_photo:', exterior_photo)
+            # print('exterior_photo:', exterior_photo)
         if monitor_obj.water_flow_photo:
             water_flow_photo = json.loads(monitor_obj.water_flow_photo)
             water_flow_photo = list_split(water_flow_photo)
-            print('water_flow_photo:', water_flow_photo)
+            # print('water_flow_photo:', water_flow_photo)
         if monitor_obj.work_photo:
             work_photo = json.loads(monitor_obj.work_photo)
             work_photo = list_split(work_photo)
-            print('work_photo:', work_photo)
+            # print('work_photo:', work_photo)
         if monitor_obj.status_photo:
             status_photo = json.loads(monitor_obj.status_photo)
             status_photo = list_split(status_photo)
-            print('status_photo:', status_photo)
+            # print('status_photo:', status_photo)
         if monitor_obj.probe_photo:
             probe_photo = json.loads(monitor_obj.probe_photo)
             probe_photo = list_split(probe_photo)
-            print('probe_photo:', probe_photo)
+            # print('probe_photo:', probe_photo)
         if monitor_obj.machine_photo:
             machine_photo = json.loads(monitor_obj.machine_photo)
             machine_photo = list_split(machine_photo)
-            print('machine_photo:', machine_photo)
+            # print('machine_photo:', machine_photo)
         if monitor_obj.setup_photo:
             setup_photo = json.loads(monitor_obj.setup_photo)
             setup_photo = list_split(setup_photo)
-            print('setup_photo:', setup_photo)
+            # print('setup_photo:', setup_photo)
         if monitor_obj.setup_photo:
             setup_photo = json.loads(monitor_obj.setup_photo)
             setup_photo = list_split(setup_photo)
-            print('setup_photo:', setup_photo)
+            # print('setup_photo:', setup_photo)
         if sample_photo:
             sample_photo = list_split(sample_photo)
-            print(sample_photo)
+            # print(sample_photo)
         return render(request, 'pictureInfo.html', {
             'monitor': monitor_obj,
             'exterior_photo': exterior_photo,

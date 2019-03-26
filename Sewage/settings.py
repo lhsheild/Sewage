@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -135,3 +135,5 @@ MEDIA_URL = '/media/'  # 访问的前缀链接
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # 存放文件的具体位置
 
 APPEND_SLASH = True
+
+SESSION_SAVE_EVERY_REQUEST = True
