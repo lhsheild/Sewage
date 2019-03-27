@@ -15,12 +15,20 @@
         <div class="panel-heading">监测点<i class="fa fa-thumb-tack pull-right"></i></div>
         <div class="panel-body">
             <div class="row" style="margin-bottom: 15px">
-                <div class="col-md-4">
+                <div class="col-md-12">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for...">
                         <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button">搜索</button>
-                                </span>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">
+                              搜索
+                            </button>
+                        </span>
+                        <span class="input-group-btn text-right">
+                            <!-- Button trigger modal -->
+                            <button id="exportBatch" type="button" class="btn btn-primary">
+                              批量导出
+                            </button>
+                        </span>
                     </div><!-- /input-group -->
                 </div><!-- /.col-md-4 -->
             </div><!-- /.row -->
@@ -90,7 +98,7 @@
                 </tbody>
             </table>
 
-            <nav aria-label="Page navigation" class="text-center">
+            <nav aria-label="Page navigation" class="text-right">
                 <ul class="pagination">
                     {% for i in total_page %}
                         {{ i|safe }}
@@ -99,4 +107,102 @@
             </nav>
         </div>
     </div>
+{% endblock %}
+
+{% block modal %}
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+        Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">搜索监测点</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form" method="post" action="">
+                        {% csrf_token %}
+                        <label for="mFunc">监测方法</label>
+                        <select class="form-control" id="mFunc" name="mFunc">
+                            <option value="0">容器法</option>
+                            <option value="1">流速法（圆管）</option>
+                            <option value="2">流速法（方渠）</option>
+                            <option value="3">仪器法</option>
+                            <option value="4">无法监测</option>
+                        </select>
+                        <div class="form-group">
+                            <label for="mPeople">监测者</label>
+                            <input type="text" class="form-control" id="mPeople" placeholder="监测者姓名" name="mPeople">
+                            <label for="mDateStart">开始日期</label>
+                            <input type="date" class="form-control datepicker datepicker-days dateStart" id="mDateStart"
+                                   placeholder="选择查询开始日期" name="mDateStart">
+                            <label for="mDateEnd">结束日期</label>
+                            <input type="date" class="form-control datepicker datepicker-days dateEnd" id="mDateEnd"
+                                   placeholder="选择查询结束日期" name="mDateEnd">
+                        </div>
+                        <div class="center text-center">
+                            <button type="reset" class="btn btn-danger">重置</button>
+                            <button type="submit" class="btn btn-primary">确定</button>
+                        </div>
+                    </form>
+                </div>
+                {#                <div class="modal-footer">#}
+                {#                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>#}
+                {#                    <button type="button" class="btn btn-primary">确定</button>#}
+                {#                </div>#}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block page-js %}
+    <script type="text/javascript">
+        $("#exportBatch").on('click', function () {
+            swal({
+                title: '批量导出',
+                html: '<label for="swalFunc">监测方法</label><select class="form-control" id="swalFunc" name="swalFunc"><option value="0">容器法</option><option value="1">流速法（圆管）</option><option value="2">流速法（方渠）</option><option value="3">仪器法</option><option value="4">无法监测</option></select>' +
+                    '<label for="swalPeople">监测者</label><input type="text" class="form-control" id="swalPeople" placeholder="监测者姓名" name="swalPeople">' +
+                    '<label for="mDateStart">开始日期</label><input type="date" class="form-control" id="mDateStart" placeholder="选择查询开始日期" name="mDateStart">' +
+                    '<label for="mDateEnd">结束日期</label><input type="date" class="form-control" id="mDateEnd" placeholder="选择查询结束日期" name="mDateEnd">'
+            })
+        })
+    </script>
+
+    <script type="text/javascript">
+        $(".dateStart").each(function () {
+            var date = new Date();
+            var startMonth = date.getMonth();
+            var nowMonth = startMonth + 1;
+            var strDate = date.getDate();
+            var seperator = "-";
+            if (nowMonth >= 1 && nowMonth <= 9) {
+                nowMonth = "0" + nowMonth;
+            }
+            if (strDate >= 0 && strDate <= 9) {
+                strDate = "0" + strDate;
+            }
+            var startDate = date.getFullYear() + seperator + startMonth + seperator + strDate;
+            var nowDate = date.getFullYear() + seperator + nowMonth + seperator + strDate;
+            $(this).val(startDate)
+        })
+    </script>
+
+    <script type="text/javascript">
+        $("#exportBatch").on('click', function () {
+            swal({
+                title: '批量导出',
+                html: '<label for="swalFunc">监测方法</label><select class="form-control" id="swalFunc" name="swalFunc"><option value="0">容器法</option><option value="1">流速法（圆管）</option><option value="2">流速法（方渠）</option><option value="3">仪器法</option><option value="4">无法监测</option></select>' +
+                    '<label for="swalPeople">监测者</label><input type="text" class="form-control" id="swalPeople" placeholder="监测者姓名" name="swalPeople">' +
+                    '<label for="mDateStart">开始日期</label><input type="date" class="form-control" id="mDateStart" placeholder="选择查询开始日期" name="mDateStart">' +
+                    '<label for="mDateEnd">结束日期</label><input type="date" class="form-control" id="mDateEnd" placeholder="选择查询结束日期" name="mDateEnd">'
+            })
+        })
+    </script>
+
 {% endblock %}

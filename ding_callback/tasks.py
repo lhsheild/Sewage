@@ -150,10 +150,12 @@ def func_container(data_dic):
                     name=name,
                     geophysical_point=geophysical_point,
                     is_monitor=1,
+                    people=people,
                     work_function=work_function,
                     exterior_photo=json.dumps(exterior_photo_lst),
                     water_flow_photo=json.dumps(water_photo_lst),
-                    work_photo=json.dumps(work_photo_lst)
+                    work_photo=json.dumps(work_photo_lst),
+                    start_time=date
                 )
             print('MonitorPoint created!!')
 
@@ -310,7 +312,9 @@ def func_circle(data_dic):
                     work_function=work_function,
                     exterior_photo=json.dumps(exterior_photo_lst),
                     water_flow_photo=json.dumps(water_photo_lst),
-                    work_photo=json.dumps(work_photo_lst)
+                    work_photo=json.dumps(work_photo_lst),
+                    people=people,
+                    start_time=date
                 )
             print('MonitorPoint created!!')
 
@@ -468,7 +472,9 @@ def func_square(data_dic):
                     work_function=work_function,
                     exterior_photo=json.dumps(exterior_photo_lst),
                     water_flow_photo=json.dumps(water_photo_lst),
-                    work_photo=json.dumps(work_photo_lst)
+                    work_photo=json.dumps(work_photo_lst),
+                    people=people,
+                    start_time=date
                 )
             print('MonitorPoint created!!')
 
@@ -640,7 +646,9 @@ def func_machine(data_dic):
                     probe_photo=json.dumps(probe_photo_lst),
                     machine_photo=json.dumps(machine_photo_lst),
                     setup_photo=json.dumps(setup_photo_lst),
-                    work_photo=json.dumps(work_photo_lst)
+                    work_photo=json.dumps(work_photo_lst),
+                    people=people,
+                    start_time=date
                 )
             print('MonitorPoint created!!')
 
@@ -665,6 +673,7 @@ def func_machine(data_dic):
 def func_unable(data_dic):
     all_data = data_dic.get('process_instance').get('form_component_values')
     name = all_data[0].get('value')  # 监测点
+    people = data_dic.get('process_instance').get('title').split('提交')[0]  # 监测者/采样者
     # print(name)
     geophysical_point = all_data[1].get('value')  # 物探点号
     # print(geophysical_point)
@@ -723,6 +732,8 @@ def func_unable(data_dic):
                     not_monitor_reason=not_monitor_reason,
                     exterior_photo=json.dumps(exterior_photo_lst),
                     water_flow_photo=json.dumps(water_photo_lst),
+                    people=people,
+                    start_time=date
                 )
             print('MonitorPoint created!!')
     except Exception as e:

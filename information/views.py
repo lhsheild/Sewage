@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.views import View
 from django.utils.decorators import method_decorator
 
@@ -50,6 +50,21 @@ class MonitorInfo(View):  # 监测点列表查询
         monitor_page_html = monitor_page.page_html()
         current_page_monitors = monitors[monitor_data_start:monitor_data_end]
         return render(request, 'monitorInfo.html', {'monitors': current_page_monitors, 'total_page': monitor_page_html})
+
+    @method_decorator(check_login)
+    def post(self, request):  # 根据条件查询监测点信息
+        req_dic = request.POST
+        func = req_dic.get('mFunc')
+        people = req_dic.get('mPeople')
+        date_start = req_dic.get('mDateStart')
+        date_end = req_dic.get('mDateEnd')
+        if func and people and date_start and date_end:
+            monitors = monitor_model.MonitorPoint.objects.filter(work_function=func, people=people, start_time__gte=date_start, start_time__lt=date_end)
+        elif func and people and date_start:
+            monitors = monitor_model.MonitorPoint.objects.filter(work_function=func, people=people, start_time__gte=date_start)
+        else:
+            monitors = None
+        return render(request, 'monitorInfo.html', {'monitors': monitors})
 
 
 class SampleInfo(View):  # 样品信息查询
@@ -175,3 +190,8 @@ class Photo(View):
             'setup_photo': setup_photo,
             'sample_photo': sample_photo
         })
+
+
+class Export(View):
+    def post(self, request):
+        pass
