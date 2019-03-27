@@ -195,3 +195,7 @@ class Photo(View):
 class Export(View):
     def post(self, request):
         print(request.GET)
+        print(request.body)
+        import json
+        print(json.loads(request.body.decode('utf-8')))
+        return HttpResponse('接受ajax')

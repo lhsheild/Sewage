@@ -207,10 +207,12 @@
               $('#swalEnd').val(nowDate);
             },
           }).then(function(result) {
+            var reqData = JSON.stringify(result);
             $.ajax({
               type: 'POST',
-              url: 'export',
-              data: JSON.stringify(result),
+              url: '../export/',
+              data:{reqData:reqData},
+              header: {'Content-Type': 'application/x-www-form-urlencoded'},
               cache: false,
               success: function(response) {
                 swal(
