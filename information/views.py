@@ -194,4 +194,4 @@ class Photo(View):
 
 class Export(View):
     def post(self, request):
-        pass
+        print(request.GET)

@@ -110,11 +110,6 @@
 {% endblock %}
 
 {% block modal %}
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-        Launch demo modal
-    </button>
-
     <!-- Modal -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -162,47 +157,79 @@
 {% endblock %}
 
 {% block page-js %}
-    <script type="text/javascript">
-        $("#exportBatch").on('click', function () {
-            swal({
-                title: '批量导出',
-                html: '<label for="swalFunc">监测方法</label><select class="form-control" id="swalFunc" name="swalFunc"><option value="0">容器法</option><option value="1">流速法（圆管）</option><option value="2">流速法（方渠）</option><option value="3">仪器法</option><option value="4">无法监测</option></select>' +
-                    '<label for="swalPeople">监测者</label><input type="text" class="form-control" id="swalPeople" placeholder="监测者姓名" name="swalPeople">' +
-                    '<label for="mDateStart">开始日期</label><input type="date" class="form-control" id="mDateStart" placeholder="选择查询开始日期" name="mDateStart">' +
-                    '<label for="mDateEnd">结束日期</label><input type="date" class="form-control" id="mDateEnd" placeholder="选择查询结束日期" name="mDateEnd">'
-            })
-        })
-    </script>
 
     <script type="text/javascript">
-        $(".dateStart").each(function () {
-            var date = new Date();
-            var startMonth = date.getMonth();
-            var nowMonth = startMonth + 1;
-            var strDate = date.getDate();
-            var seperator = "-";
-            if (nowMonth >= 1 && nowMonth <= 9) {
-                nowMonth = "0" + nowMonth;
-            }
-            if (strDate >= 0 && strDate <= 9) {
-                strDate = "0" + strDate;
-            }
-            var startDate = date.getFullYear() + seperator + startMonth + seperator + strDate;
-            var nowDate = date.getFullYear() + seperator + nowMonth + seperator + strDate;
-            $(this).val(startDate)
-        })
-    </script>
+      $(document).ready(function() {
+        var date = new Date();
+        var startMonth = date.getMonth();
+        var nowMonth = startMonth + 1;
+        var strDate = date.getDate();
+        var seperator = '-';
+        if (nowMonth >= 1 && nowMonth <= 9) {
+          nowMonth = '0' + nowMonth;
+        }
+        if (startMonth >= 1 && startMonth <= 9) {
+          startMonth = '0' + startMonth;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+          strDate = '0' + strDate;
+        }
 
-    <script type="text/javascript">
-        $("#exportBatch").on('click', function () {
-            swal({
-                title: '批量导出',
-                html: '<label for="swalFunc">监测方法</label><select class="form-control" id="swalFunc" name="swalFunc"><option value="0">容器法</option><option value="1">流速法（圆管）</option><option value="2">流速法（方渠）</option><option value="3">仪器法</option><option value="4">无法监测</option></select>' +
-                    '<label for="swalPeople">监测者</label><input type="text" class="form-control" id="swalPeople" placeholder="监测者姓名" name="swalPeople">' +
-                    '<label for="mDateStart">开始日期</label><input type="date" class="form-control" id="mDateStart" placeholder="选择查询开始日期" name="mDateStart">' +
-                    '<label for="mDateEnd">结束日期</label><input type="date" class="form-control" id="mDateEnd" placeholder="选择查询结束日期" name="mDateEnd">'
-            })
-        })
+        var startDate = date.getFullYear() + seperator + startMonth + seperator + strDate;
+        var nowDate = date.getFullYear() + seperator + nowMonth + seperator + strDate;
+        $('.dateStart').val(startDate);
+        $('.dateEnd').val(nowDate);
+
+        {#SWEATALEART#}
+        $('#exportBatch').on('click', function() {
+
+          swal({
+            title: '多输入',
+            html:
+                '<label for="swalFunc">监测方法</label><select class="form-control" id="swalFunc" name="swalFunc"><option value="0">容器法</option><option value="1">流速法（圆管）</option><option value="2">流速法（方渠）</option><option value="3">仪器法</option><option value="4">无法监测</option></select>' +
+                '<label for="swalPeople">监测者</label><input type="text" class="form-control" id="swalPeople" placeholder="监测者姓名" name="swalPeople">' +
+                '<label for="mDateStart">开始日期</label><input type="date" class="form-control" id="swalStart" placeholder="选择查询开始日期" name="mDateStart">' +
+                '<label for="mDateEnd">结束日期</label><input type="date" class="form-control" id="swalEnd" placeholder="选择查询结束日期" name="mDateEnd">',
+            preConfirm: function() {
+              return new Promise(function(resolve) {
+                resolve([
+                  $('#swalFunc').val(),
+                  $('#swalPeople').val(),
+                  $('#swalStart').val(),
+                  $('#swalEnd').val(),
+                ]);
+              });
+            },
+            onOpen: function() {
+              $('#swalFunc').val(0);
+              $('#swalPeople').val('所有人');
+              $('#swalStart').val(startDate);
+              $('#swalEnd').val(nowDate);
+            },
+          }).then(function(result) {
+            $.ajax({
+              type: 'POST',
+              url: 'export',
+              data: JSON.stringify(result),
+              cache: false,
+              success: function(response) {
+                swal(
+                    'Sccess!',
+                    'Your note has been saved!',
+                    'success',
+                );
+              },
+              failure: function(response) {
+                swal(
+                    'Internal Error',
+                    'Oops, your note was not saved.', // had a missing comma
+                    'error',
+                );
+              },
+            });
+          });
+        });
+      });
     </script>
 
 {% endblock %}

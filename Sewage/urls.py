@@ -40,9 +40,12 @@ urlpatterns = [
     url(r'^logout/$', information_views.Logout.as_view()),
 
     # 查看监测点信息
-    url(r'monitor/$', information_views.MonitorInfo.as_view()),
-    url(r'sample/$', information_views.SampleInfo.as_view()),
-    url(r'flow/$', information_views.FlowInfo.as_view()),
-    url(r'photo/$', information_views.Photo.as_view()),
+    url(r'^monitor/$', information_views.MonitorInfo.as_view()),
+    url(r'^sample/$', information_views.SampleInfo.as_view()),
+    url(r'^flow/$', information_views.FlowInfo.as_view()),
+    url(r'^photo/$', information_views.Photo.as_view()),
+
+    # 导出数据
+    url(r'^export/$', information_views.Export.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
