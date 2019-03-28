@@ -47,5 +47,7 @@ urlpatterns = [
 
     # 导出数据
     url(r'^export/$', information_views.Export.as_view()),
+    # 下载导出的数据
+    url(r'^down/$', information_views.Download.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

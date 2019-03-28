@@ -26,6 +26,16 @@ def list_split(list):
     return new_list
 
 
+def file_iterator(file_name, chunk_size=512):
+    with open(file_name, 'rb') as f:
+        while True:
+            c = f.read(chunk_size)
+            if c:
+                yield c
+            else:
+                break
+
+
 # if __name__ == '__main__':
 #     lst = ['E:\\Projects\\Python_Projects\\Sewage\\media\\img\\2019\\03\\21\\T1-1_外景_0.jpg', 'E:\\Projects\\Python_Projects\\Sewage\\media\\img\\2019\\03\\21\\T1-1_外景_0.jpg']
 #     lst = list_split(lst)

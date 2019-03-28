@@ -1,10 +1,10 @@
 import openpyxl
 import os
 from statistics import mean
-from datetime import datetime
+import time
 import json
 import shutil
-from zipfile import ZipFile
+import zipfile
 
 from conf import my_setting
 from lib.common import list_split
@@ -12,14 +12,9 @@ from Sewage import settings
 
 
 def ex_container(monitor_objs):
-    # for m in monitor_objs:
-    #     monitor_name = m.name
-    #     monitor_people = m.people
-    #     monitor_date = m.start_time
-    #     sample_objs = m.sample.all()
-    # print('container')
-    date = datetime.now().date()
-    output_path = os.path.join(my_setting.export_folder, str(date))
+    time_str = time.time()
+    time_str = str(time_str)
+    output_path = os.path.join(my_setting.export_folder, time_str)
     if not os.path.exists(output_path):
         os.mkdir(output_path)
     static_excel = os.path.join(output_path, '小区监测统计表.xlsx')
@@ -29,10 +24,21 @@ def ex_container(monitor_objs):
         if not os.path.exists(output_path_per_monitor):
             os.mkdir(output_path_per_monitor)
         monitor_flow_dic = {}
+
         exterior_photo = json.loads(m.exterior_photo)
         exterior_photo = list_split(exterior_photo)
         for ep in exterior_photo:
             shutil.copy('{}{}{}'.format(settings.BASE_DIR, os.sep, ep), output_path_per_monitor)
+
+        water_flow_photo = json.loads(m.water_flow_photo)
+        water_flow_photo = list_split(water_flow_photo)
+        for wfp in water_flow_photo:
+            shutil.copy('{}{}{}'.format(settings.BASE_DIR, os.sep, wfp), output_path_per_monitor)
+
+        work_photo = json.loads(m.work_photo)
+        work_photo = list_split(work_photo)
+        for wp in work_photo:
+            shutil.copy('{}{}{}'.format(settings.BASE_DIR, os.sep, wp), output_path_per_monitor)
 
         fs = m.flow.all().distinct('flow_date')  # 根据采样时间分组
         f_date_lst = []
@@ -57,6 +63,11 @@ def ex_container(monitor_objs):
 
             ss = m.sample.filter(sample_date=i).distinct('sample_time').order_by('sample_time')  # 日期’i‘对应的样品表对象
             for s in ss:
+                if s.sample_photo != '' and s.sample_photo != 'null' and s.sample_photo is not None:
+                    sample_photo = json.loads(s.sample_photo)
+                    sample_photo = list_split(sample_photo)
+                    for sp in sample_photo:
+                        shutil.copy('{}{}{}'.format(settings.BASE_DIR, os.sep, sp), output_path_per_monitor)
                 if str(s.sample_time) == '08:00:00':
                     s_ws['I{}'.format(4 + 3 * count_m - 2)] = '08:00:00'
                     s_ws['J{}'.format(4 + 3 * count_m - 2)] = s.sample_number
@@ -150,3 +161,17 @@ def ex_container(monitor_objs):
         s_ws['B{}'.format(4 + 3 * count_m - 2)] = m.name
         s_ws['E{}'.format(4 + 3 * count_m - 2)] = m.geophysical_point
         m_wb.save(static_excel)
+    file_news = time_str + '.zip'
+    file_news = my_setting.export_folder + os.sep + file_news
+    with zipfile.ZipFile(file_news, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for dirpath, dirnames, filenames in os.walk(output_path):
+            fpath = dirpath.replace(output_path,'')
+            fpath = fpath and fpath + os.sep or ''
+            for filename in filenames:
+                zf.write(os.path.join(dirpath, filename), fpath + filename)
+    shutil.rmtree(output_path)
+    return time_str + '.zip'
+
+
+def ex_unable(monitor_objs):
+    pass

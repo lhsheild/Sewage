@@ -41,7 +41,7 @@ class MonitorInfo(View):  # 监测点列表查询
     @method_decorator(check_login)
     def get(self, request):
         from lib.mypage import Page
-        p = request.GET.get('p')
+        p = request.GET.get('page')
         monitors = monitor_model.MonitorPoint.objects.all()
         total_count = monitors.count()
         monitor_page = Page(p, total_count, 'monitor')
@@ -49,6 +49,7 @@ class MonitorInfo(View):  # 监测点列表查询
         monitor_data_end = monitor_page.data_end
         monitor_page_html = monitor_page.page_html()
         current_page_monitors = monitors[monitor_data_start:monitor_data_end]
+
         return render(request, 'monitorInfo.html', {'monitors': current_page_monitors, 'total_page': monitor_page_html})
 
     @method_decorator(check_login)
@@ -206,9 +207,27 @@ class Export(View):
         mdataend = data_dic.get('exDateEnd')
         monitors = monitor_model.MonitorPoint.objects.filter(work_function=mfunc, people=mpeople,
                                                              start_time__gte=mdatastart, start_time__lte=mdataend)
-        from lib import export
+        if monitors:
+            from lib import export
+            from conf import my_setting
+            if hasattr(export, my_setting.ex_func_lst[mfunc]):
+                ex_func = getattr(export, my_setting.ex_func_lst[mfunc])
+                zipfile = ex_func(monitors)
+
+                return HttpResponse(zipfile)
+        else:
+            return HttpResponse('查询为空')
+
+
+class Download(View):
+    def get(self, request):
+        filename = request.GET.get('file')
         from conf import my_setting
-        if hasattr(export, my_setting.ex_func_lst[mfunc]):
-            ex_func = getattr(export, my_setting.ex_func_lst[mfunc])
-            ex_func(monitors)
-        return HttpResponse('接受ajax')
+        import os
+        filename = my_setting.export_folder + os.sep +filename
+        from django.http import StreamingHttpResponse
+        from lib.common import file_iterator
+        response = StreamingHttpResponse(file_iterator(filename))
+        response['Content-Type'] = 'application/octet-stream'  # 设置头信息，告诉浏览器这是个文件
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(filename)
+        return response

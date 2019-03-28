@@ -1,0 +1,23 @@
+          if ($('#exFunc').val() != '' & $('#exPeople').val() != '' & $('#exDateStart').val() != '' &
+              $('#exDateEnd').val() != '') {
+            var exFunc = $('#exFunc').val();
+            var exPeople = $('#exPeople').val();
+            var exDateStart = $('#exDateStart').val();
+            var exDateEnd = $('#exDateEnd').val();
+            data_dic = {
+              exFunc: exFunc,
+              exPeople: exPeople,
+              exDateStart: exDateStart,
+              exDateEnd: exDateEnd,
+            };
+            data_json = JSON.stringify(data_dic);
+            $.post(
+                '../export/',
+                data_json,
+                function(ret) {
+                    alert(ret);
+                },
+            );
+          } else {
+            alert('请输入完整条件');
+          }

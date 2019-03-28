@@ -200,57 +200,93 @@
 {% block page-js %}
 
     <script type="text/javascript">
-        $(document).ready(function () {
-            var date = new Date();
-            var startMonth = date.getMonth();
-            var nowMonth = startMonth + 1;
-            var strDate = date.getDate();
-            var seperator = '-';
-            if (nowMonth >= 1 && nowMonth <= 9) {
-                nowMonth = '0' + nowMonth;
-            }
-            if (startMonth >= 1 && startMonth <= 9) {
-                startMonth = '0' + startMonth;
-            }
-            if (strDate >= 0 && strDate <= 9) {
-                strDate = '0' + strDate;
-            }
 
-            var startDate = date.getFullYear() + seperator + startMonth + seperator + strDate;
-            var nowDate = date.getFullYear() + seperator + nowMonth + seperator + strDate;
-            $('.dateStart').val(startDate);
-            $('.dateEnd').val(nowDate);
+      function toUrl(url, params) {
+        let paramsArr = [];
+        if (params) {
+          Object.keys(params).forEach(item => {
+            paramsArr.push(item + '=' + params[item]);
+          });
+          if (url.search(/\?/) === -1) {
+            url += '?' + paramsArr.join('&');
+          } else {
+            url += '&' + paramsArr.join('&');
+          }
 
-            $('#exModalButton').on('click', function () {
-                $('#exModal').modal('show');
-            })
+        }
+        return url;
+      }
 
-            $('#exSureBtn').on('click', function () {
-                if ($('#exFunc').val() != '' & $('#exPeople').val() != '' & $('#exDateStart').val() != '' & $('#exDateEnd').val() != '') {
-                    var exFunc = $('#exFunc').val();
-                    var exPeople = $('#exPeople').val();
-                    var exDateStart = $('#exDateStart').val();
-                    var exDateEnd = $('#exDateEnd').val();
-                    data_dic = {
-                        exFunc: exFunc,
-                        exPeople: exPeople,
-                        exDateStart: exDateStart,
-                        exDateEnd: exDateEnd
-                    };
-                    data_json = JSON.stringify(data_dic);
-                    $.post(
-                        '../export/',
-                        data_json,
-                        function (ret) {
-                            alert(ret);
-                        }
-                    );
-                }
-                else {
-                    alert('请输入完整条件');
-                }
-            })
+      $(document).ready(function() {
+        let startDate;
+        const date = new Date();
+        let startMonth = date.getMonth();
+        let nowMonth = startMonth + 1;
+        let strDate = date.getDate();
+        const seperator = '-';
+        if (nowMonth >= 1 && nowMonth <= 9) {
+          nowMonth = '0' + nowMonth;
+        }
+        if (startMonth >= 1 && startMonth <= 9) {
+          startMonth = '0' + startMonth;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+          strDate = '0' + strDate;
+        }
+        if (startMonth == '02' && strDate == '29') {
+          startDate = '28';
+        } else {
+          startDate = strDate;
+        }
+
+        startDate = date.getFullYear() + seperator + startMonth + seperator + startDate;
+        const nowDate = date.getFullYear() + seperator + nowMonth + seperator + strDate;
+        $('.dateStart').val(startDate);
+        $('.dateEnd').val(nowDate);
+
+        $('#exModalButton').on('click', function() {
+          $('#exModal').modal('show');
         });
+
+        $('#exSureBtn').on('click', function() {
+          if ($('#exFunc').val() != '' & $('#exPeople').val() != '' & $('#exDateStart').val() != '' &
+              $('#exDateEnd').val() != '') {
+            const exFunc = $('#exFunc').val();
+            const exPeople = $('#exPeople').val();
+            const exDateStart = $('#exDateStart').val();
+            const exDateEnd = $('#exDateEnd').val();
+            const data_dic = {
+              exFunc: exFunc,
+              exPeople: exPeople,
+              exDateStart: exDateStart,
+              exDateEnd: exDateEnd,
+            };
+            const data_json = JSON.stringify(data_dic);
+            $.post(
+                '../export/',
+                data_json,
+                function(ret) {
+                  const baseUrl = '/down/';
+                  const params = {
+                    'file': ret,
+                  };
+                  const finalUrl = toUrl(baseUrl, params);
+                  fetch(finalUrl).then(res => res.blob().then(blob => {
+                    let a = document.createElement('a');
+                    const url = window.URL.createObjectURL(blob);
+                    const filename = ret;
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                  }));
+                },
+            );
+          } else {
+            alert('请输入完整条件');
+          }
+        });
+      });
     </script>
 
 {% endblock %}
