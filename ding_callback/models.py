@@ -39,6 +39,9 @@ class SampleInfo(models.Model):
     sample_odor = models.CharField('样品气味', max_length=32)
     sample_turbidity = models.CharField('样品浊度', max_length=32)
 
+    monitor_task = models.CharField('检测项目', max_length=128)
+    sample_count = models.IntegerField('样品数量')
+
     SS = models.CharField('悬浮物', max_length=32, null=True)
     NH3_N = models.CharField('氨氮', max_length=32, null=True)
     TP = models.CharField('总磷', max_length=32, null=True)

@@ -59,9 +59,11 @@ class MonitorInfo(View):  # 监测点列表查询
         date_start = req_dic.get('mDateStart')
         date_end = req_dic.get('mDateEnd')
         if func and people and date_start and date_end:
-            monitors = monitor_model.MonitorPoint.objects.filter(work_function=func, people=people, start_time__gte=date_start, start_time__lt=date_end)
+            monitors = monitor_model.MonitorPoint.objects.filter(work_function=func, people=people,
+                                                                 start_time__gte=date_start, start_time__lte=date_end)
         elif func and people and date_start:
-            monitors = monitor_model.MonitorPoint.objects.filter(work_function=func, people=people, start_time__gte=date_start)
+            monitors = monitor_model.MonitorPoint.objects.filter(work_function=func, people=people,
+                                                                 start_time__gte=date_start)
         else:
             monitors = None
         return render(request, 'monitorInfo.html', {'monitors': monitors})
@@ -194,8 +196,19 @@ class Photo(View):
 
 class Export(View):
     def post(self, request):
-        print(request.GET)
-        print(request.body)
         import json
-        print(json.loads(request.body.decode('utf-8')))
+        data_dic = request.body.decode('utf-8')
+        data_dic = json.loads(data_dic)
+        mfunc = data_dic.get('exFunc')
+        mfunc = int(mfunc)
+        mpeople = data_dic.get('exPeople')
+        mdatastart = data_dic.get('exDateStart')
+        mdataend = data_dic.get('exDateEnd')
+        monitors = monitor_model.MonitorPoint.objects.filter(work_function=mfunc, people=mpeople,
+                                                             start_time__gte=mdatastart, start_time__lte=mdataend)
+        from lib import export
+        from conf import my_setting
+        if hasattr(export, my_setting.ex_func_lst[mfunc]):
+            ex_func = getattr(export, my_setting.ex_func_lst[mfunc])
+            ex_func(monitors)
         return HttpResponse('接受ajax')

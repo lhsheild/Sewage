@@ -1,4 +1,5 @@
 import os
+from Sewage import settings
 
 
 # 容器法
@@ -15,7 +16,7 @@ process_code_unable = 'PROC-ELYJ1A4W-SXJ37TP95QVKM4F1BV143-L84IYXSJ-4'
 # 需要回调的审批流程
 process_code_lst = [process_code_container, process_code_circle, process_code_square, process_code_machine,
                     process_code_unable]
-# 用于反射的字典
+# 用于回调功能反射的字典
 process_code_dic = {process_code_container: 'func_container', process_code_circle: 'func_circle',
                     process_code_square: 'func_square', process_code_machine: 'func_machine',
                     process_code_unable: 'func_unable'}
@@ -35,6 +36,16 @@ token = '123456'
 # project_path = os.path.dirname(os.getcwd())
 project_path = os.getcwd()
 # 媒体文件路径
-media_path = os.path.join(project_path, 'media')
+media_path = os.path.join(settings.BASE_DIR, 'media')
 # 图片存储路径
 img_folder_path = os.path.join(media_path, 'img')
+# excel路径
+excel_folder = os.path.join(media_path, 'excel')
+# 导出路径
+export_folder = os.path.join(media_path, 'output')
+
+# 用于导出功能回调的列表
+ex_func_lst = ['ex_container', 'ex_circle', 'ex_square', 'ex_machine', 'ex_unable']
+
+if __name__ == '__main__':
+    print(settings.BASE_DIR)

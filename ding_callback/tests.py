@@ -3,6 +3,8 @@ import os
 import json
 import datetime
 import itertools
+import openpyxl
+from statistics import mean
 
 from conf import my_setting
 
@@ -33,43 +35,126 @@ if __name__ == '__main__':
     django.setup()
 
     from ding_callback import models
-    from lib.common import list_split
-
-    data_dic = {'errcode': 0, 'process_instance': {'attached_process_instance_ids': [], 'biz_action': 'NONE',
-                                                   'business_id': '201903271155000450270',
-                                                   'cc_userids': ['2504294407695839'],
-                                                   'create_time': '2019-03-27 11:55:45',
-                                                   'finish_time': '2019-03-27 11:55:52',
-                                                   'form_component_values': [{'name': '监测点', 'value': 'L1-3'},
-                                                                             {'name': '监测点物探号', 'value': 'LHH'}, {
-                                                                                 'ext_value': '当前时间:2019-03-27 11:55:15\n当前地点:广西壮族自治区南宁市青秀区 建政街道景都国际大酒店',
-                                                                                 'name': '["当前时间","当前地点"]',
-                                                                                 'value': '["2019-03-27 11:55:15",108.363395,22.825507,"广西 壮族自治区南宁市青秀区建政街道景都国际大酒店",29]'},
-                                                                             {'name': '监测点外景照',
-                                                                              'value': '["https://static.dingtalk.com/media/lADPBE1XX7y-Ky7NBnTNBDg_1080_1652.jpg"]'},
-                                                                             {'name': '监测点水流照',
-                                                                              'value': '["https://static.dingtalk.com/media/lADPBE1XX7y-S1DNBnTNBDg_1080_1652.jpg"]'},
-                                                                             {'name': '无法监测原因', 'value': '浪费时间'},
-                                                                             {'name': '是否合格', 'value': ' 是'}],
-                                                   'operation_records': [
-                                                       {'date': '2019-03-27 11:55:45', 'operation_result': 'NONE',
-                                                        'operation_type': 'START_PROCESS_INSTANCE',
-                                                        'userid': 'manager405'},
-                                                       {'date': '2019-03-27 11:55:51', 'operation_result': 'AGREE',
-                                                        'operation_type': 'EXECUTE_TASK_NORMAL', 'remark': '',
-                                                        'userid': 'manager405'},
-                                                       {'date': '2019-03-27 11:55:51', 'operation_result': 'NONE',
-                                                        'operation_type': 'NONE', 'remark': '',
-                                                        'userid': 'manager405'}], 'originator_dept_id': '104659413',
-                                                   'originator_dept_name': '水质组', 'originator_userid': 'manager405',
-                                                   'result': 'agree', 'status': 'COMPLETED', 'tasks': [
-            {'create_time': '2019-03-27 11:55:45', 'finish_time': '2019-03-27 11:55:51', 'task_result': 'AGREE',
-             'task_status': 'COMPLETED', 'taskid': '61010289327', 'userid': 'manager405'}],
-                                                   'title': '梁昊提交的流量水质监测（无法监测）'}, 'request_id': '5dleal6xp72j'}
 
     obj = models.MonitorPoint.objects.filter(people='曾玄介').first()
-    t = obj.people + '梁昊'
-    print(t)
+    print(json.loads(obj.exterior_photo),type(json.loads(obj.exterior_photo)))
+    print(obj.exterior_photo, type(obj.exterior_photo))
 
-    people = data_dic.get('process_instance').get('title').split('提交')[0]  # 监测者/采样者
-    print(people)
+    # ms = models.MonitorPoint.objects.filter(people='梁昊', work_function=0)
+    #
+    # for count_m, m in enumerate(ms, 1):  # 遍历所有监测点
+    #     monitor_flow_dic = {}
+    #     fs = m.flow.all().distinct('flow_date')  # 根据采样时间分组
+    #     f_date_lst = []
+    #     if count_m == 1:
+    #         m_wb = openpyxl.load_workbook(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'))
+    #         f_ws = m_wb['流量']
+    #         s_ws = m_wb['水质']
+    #     else:
+    #         m_wb = openpyxl.load_workbook('test.xlsx')
+    #         f_ws = m_wb['流量']
+    #         s_ws = m_wb['水质']
+    #     for f in fs:
+    #         f_date_lst.append(f.flow_date)  # 所有的采样日期
+    #     for i in f_date_lst:
+    #         if s_ws['H{}'.format(4 + 3 * count_m - 2)].value != '' and s_ws[
+    #             'H{}'.format(4 + 3 * count_m - 2)].value is not None and s_ws[
+    #             'H{}'.format(4 + 3 * count_m - 2)].value != str(i):
+    #             s_ws['H{}'.format(4 + 3 * count_m - 2)] = s_ws['H{}'.format(4 + 3 * count_m - 2)].value + '/' + str(i)
+    #         else:
+    #             s_ws['H{}'.format(4 + 3 * count_m - 2)] = str(i)
+    #
+    #         ss = m.sample.filter(sample_date=i).distinct('sample_time').order_by('sample_time')  # 日期’i‘对应的样品表对象
+    #         for s in ss:
+    #             if str(s.sample_time) == '08:00:00':
+    #                 s_ws['I{}'.format(4 + 3 * count_m - 2)] = '08:00:00'
+    #                 s_ws['J{}'.format(4 + 3 * count_m - 2)] = s.sample_number
+    #                 s_ws['K{}'.format(
+    #                     4 + 3 * count_m - 2)] = s.sample_color + '、' + s.sample_odor + '、' + s.sample_turbidity
+    #                 s_ws['L{}'.format(4 + 3 * count_m - 2)] = s.monitor_task
+    #                 s_ws['M{}'.format(4 + 3 * count_m - 2)] = s.sample_count
+    #                 s_ws['N{}'.format(4 + 3 * count_m - 2)] = s.people
+    #             elif str(s.sample_time) == '12:30:00':
+    #                 s_ws['I{}'.format(4 + 3 * count_m - 1)] = '12:30:00'
+    #                 s_ws['J{}'.format(4 + 3 * count_m - 1)] = s.sample_number
+    #                 s_ws['K{}'.format(
+    #                     4 + 3 * count_m - 1)] = s.sample_color + '、' + s.sample_odor + '、' + s.sample_turbidity
+    #                 s_ws['L{}'.format(4 + 3 * count_m - 1)] = s.monitor_task
+    #                 s_ws['M{}'.format(4 + 3 * count_m - 1)] = s.sample_count
+    #                 s_ws['N{}'.format(4 + 3 * count_m - 1)] = s.people
+    #             else:
+    #                 s_ws['I{}'.format(4 + 3 * count_m)] = '19:30:00'
+    #                 s_ws['J{}'.format(4 + 3 * count_m)] = s.sample_number
+    #                 s_ws['K{}'.format(
+    #                     4 + 3 * count_m)] = s.sample_color + '、' + s.sample_odor + '、' + s.sample_turbidity
+    #                 s_ws['L{}'.format(4 + 3 * count_m)] = s.monitor_task
+    #                 s_ws['M{}'.format(4 + 3 * count_m)] = s.sample_count
+    #                 s_ws['N{}'.format(4 + 3 * count_m)] = s.people
+    #         fs = m.flow.filter(flow_date=i).distinct('flow_time').order_by('flow_time')  # 日期’i‘对应的流量表对象
+    #         wb = openpyxl.load_workbook(os.path.join(my_setting.excel_folder, '流量表.xlsx'))
+    #         ws = wb['流量']
+    #         ws['A4'].value = m.name
+    #         temp_ex_name = m.name + '_' + str(i) + '_' + '流量表.xlsx'
+    #         day_avg_flow_lst = []
+    #         for f in fs:  # 遍历某一采样时间的流量对象
+    #             # print(f.flow_date, f.flow_time,f.volume1)
+    #             if str(f.flow_time) == '08:00:00':
+    #                 time_lst = [f.time1, f.time2, f.time3]
+    #                 flow_lst = [f.volume1, f.volume2, f.volume3]
+    #                 flow1 = (flow_lst[0] / 1000) / time_lst[0]
+    #                 flow2 = (flow_lst[1] / 1000) / time_lst[1]
+    #                 flow3 = (flow_lst[2] / 1000) / time_lst[2]
+    #                 day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
+    #                 for j in range(4, 7):
+    #                     temp_time = 'D' + str(j)
+    #                     ws[temp_time].value = time_lst[j - 4]
+    #                     temp_water = 'E' + str(j)
+    #                     ws[temp_water].value = flow_lst[j - 4]
+    #             elif str(f.flow_time) == '12:30:00':
+    #                 time_lst = [f.time1, f.time2, f.time3]
+    #                 flow_lst = [f.volume1, f.volume2, f.volume3]
+    #                 flow1 = (flow_lst[0] / 1000) / time_lst[0]
+    #                 flow2 = (flow_lst[1] / 1000) / time_lst[1]
+    #                 flow3 = (flow_lst[2] / 1000) / time_lst[2]
+    #                 day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
+    #                 for j in range(7, 10):
+    #                     temp_time = 'D' + str(j)
+    #                     ws[temp_time].value = time_lst[j - 7]
+    #                     temp_water = 'E' + str(j)
+    #                     ws[temp_water].value = flow_lst[j - 7]
+    #             else:
+    #                 time_lst = [f.time1, f.time2, f.time3]
+    #                 flow_lst = [f.volume1, f.volume2, f.volume3]
+    #                 flow1 = (flow_lst[0] / 1000) / time_lst[0]
+    #                 flow2 = (flow_lst[1] / 1000) / time_lst[1]
+    #                 flow3 = (flow_lst[2] / 1000) / time_lst[2]
+    #                 day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
+    #                 for j in range(10, 13):
+    #                     temp_time = 'D' + str(j)
+    #                     ws[temp_time].value = time_lst[j - 10]
+    #                     temp_water = 'E' + str(j)
+    #                     ws[temp_water].value = flow_lst[j - 10]
+    #         intro = '监测日期：{}                观测者：{}                检查者：'.format(i, m.people)
+    #         ws['A2'] = intro
+    #         wb.save(temp_ex_name)
+    #         day_avg = mean(day_avg_flow_lst)
+    #         day_total_flow = day_avg * 86400 / 1000
+    #         monitor_flow_dic[str(i)] = day_total_flow
+    #     avg_day_total_flow = mean(monitor_flow_dic.values())
+    #     date_sorted_lst = sorted(monitor_flow_dic.keys())
+    #     start_time = date_sorted_lst[0]
+    #     end_time = date_sorted_lst[-1]
+    #     f_ws['A{}'.format(3 + count_m)] = count_m
+    #     f_ws['B{}'.format(3 + count_m)] = m.name
+    #     f_ws['E{}'.format(3 + count_m)] = m.geophysical_point
+    #     f_ws['L{}'.format(3 + count_m)] = start_time
+    #     f_ws['M{}'.format(3 + count_m)] = end_time
+    #     f_ws['N{}'.format(3 + count_m)] = '当日00:00至24:00'
+    #     f_ws['O{}'.format(3 + count_m)] = avg_day_total_flow
+    #     f_ws['Q{}'.format(3 + count_m)] = '容器法'
+    #     f_ws['R{}'.format(3 + count_m)] = m.people
+    #
+    #     s_ws['A{}'.format(4 + 3 * count_m - 2)] = count_m
+    #     s_ws['B{}'.format(4 + 3 * count_m - 2)] = m.name
+    #     s_ws['E{}'.format(4 + 3 * count_m - 2)] = m.geophysical_point
+    #     m_wb.save('test.xlsx')
