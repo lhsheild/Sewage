@@ -213,7 +213,7 @@ class Export(View):
             if hasattr(export, my_setting.ex_func_lst[mfunc]):
                 ex_func = getattr(export, my_setting.ex_func_lst[mfunc])
                 zipfile = ex_func(monitors)
-
+                print(zipfile)
                 return HttpResponse(zipfile)
         else:
             return HttpResponse('查询为空')
@@ -221,10 +221,11 @@ class Export(View):
 
 class Download(View):
     def get(self, request):
+        print('requst.GET', request.GET)
         filename = request.GET.get('file')
         from conf import my_setting
         import os
-        filename = my_setting.export_folder + os.sep +filename
+        filename = my_setting.export_folder + os.sep + filename
         from django.http import StreamingHttpResponse
         from lib.common import file_iterator
         response = StreamingHttpResponse(file_iterator(filename))

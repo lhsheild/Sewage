@@ -38,9 +38,9 @@ def get_bpms_data_by_bpmsID(id, code):
 
 def func_container(data_dic):
     all_data = data_dic.get('process_instance').get('form_component_values')
-    name = all_data[0].get('value')  # 监测点
+    name = all_data[0].get('value').strip()  # 监测点
     # print(name)
-    geophysical_point = all_data[1].get('value')  # 物探点号
+    geophysical_point = all_data[1].get('value').strip()  # 物探点号
     # print(geophysical_point)
     work_function = 0
     upload_time = json.loads(all_data[2].get('value'))[0]  # 审批提交时间
@@ -85,28 +85,28 @@ def func_container(data_dic):
     # print(monitor_time)
 
     # 容器法测流量
-    time1 = all_data[7].get('value')
+    time1 = all_data[7].get('value').strip()
     # print(time1)
-    volume1 = all_data[8].get('value')
+    volume1 = all_data[8].get('value').strip()
     # print(volume1)
-    time2 = all_data[9].get('value')
+    time2 = all_data[9].get('value').strip()
     # print(time2)
-    volume2 = all_data[10].get('value')
+    volume2 = all_data[10].get('value').strip()
     # print(volume2)
-    time3 = all_data[11].get('value')
+    time3 = all_data[11].get('value').strip()
     # print(time3)
-    volume3 = all_data[12].get('value')
+    volume3 = all_data[12].get('value').strip()
     # print(volume3)
 
     # 样品编号
-    sample_number = all_data[13].get('value')
+    sample_number = all_data[13].get('value').strip()
     # print(sample_number)
 
     # 监测指标
-    indicator = all_data[14].get('value')
+    indicator = all_data[14].get('value').strip()
 
     # 样品数量
-    sample_count = all_data[15].get('value')
+    sample_count = all_data[15].get('value').strip()
 
     sample_photo_link_lst = json.loads(all_data[16].get('value'))  # 钉钉回调的样品照链接
     sample_photo_lst = []
@@ -118,13 +118,13 @@ def func_container(data_dic):
     # print(sample_photo_lst)
 
     # 样品颜色
-    sample_color = all_data[17].get('value')
+    sample_color = all_data[17].get('value').strip()
     # print(sample_color)
     # 样品气味
-    sample_odor = all_data[18].get('value')
+    sample_odor = all_data[18].get('value').strip()
     # print(sample_odor)
     # 样品浊度
-    sample_turbidity = all_data[19].get('value')
+    sample_turbidity = all_data[19].get('value').strip()
     # print(sample_turbidity)
 
     try:
@@ -200,9 +200,9 @@ def func_container(data_dic):
 
 def func_circle(data_dic):
     all_data = data_dic.get('process_instance').get('form_component_values')
-    name = all_data[0].get('value')  # 监测点
+    name = all_data[0].get('value').strip()  # 监测点
     # print(name)
-    geophysical_point = all_data[1].get('value')  # 物探点号
+    geophysical_point = all_data[1].get('value').strip()  # 物探点号
     # print(geophysical_point)
     work_function = 1
     upload_time = json.loads(all_data[2].get('value'))[0]  # 审批提交时间
@@ -248,32 +248,32 @@ def func_circle(data_dic):
     # print(monitor_time)
 
     # 圆管测流量
-    diameter = all_data[7].get('value')
+    diameter = all_data[7].get('value').strip()
     # print(diameter)
-    silt_depth = all_data[8].get('value')
+    silt_depth = all_data[8].get('value').strip()
     # print(silt_depth)
-    liquid1 = all_data[9].get('value')
+    liquid1 = all_data[9].get('value').strip()
     # print(liquid1)
-    flow1 = all_data[10].get('value')
+    flow1 = all_data[10].get('value').strip()
     # print(flow1)
-    liquid2 = all_data[11].get('value')
+    liquid2 = all_data[11].get('value').strip()
     # print(liquid2)
-    flow2 = all_data[12].get('value')
+    flow2 = all_data[12].get('value').strip()
     # print(flow2)
-    liquid3 = all_data[13].get('value')
+    liquid3 = all_data[13].get('value').strip()
     # print(liquid3)
-    flow3 = all_data[14].get('value')
+    flow3 = all_data[14].get('value').strip()
     # print(flow3)
 
     # 样品编号
-    sample_number = all_data[15].get('value')
+    sample_number = all_data[15].get('value').strip()
     # print(sample_number)
 
     # 监测指标
-    indicator = all_data[16].get('value')
+    indicator = all_data[16].get('value').strip()
 
     # 样品数量
-    sample_count = all_data[17].get('value')
+    sample_count = all_data[17].get('value').strip()
 
     sample_photo_link_lst = json.loads(all_data[18].get('value'))  # 钉钉回调的样品照链接
     sample_photo_lst = []
@@ -369,9 +369,9 @@ def func_circle(data_dic):
 
 def func_square(data_dic):
     all_data = data_dic.get('process_instance').get('form_component_values')
-    name = all_data[0].get('value')  # 监测点
+    name = all_data[0].get('value').strip()  # 监测点
     # print(name)
-    geophysical_point = all_data[1].get('value')  # 物探点号
+    geophysical_point = all_data[1].get('value').strip()  # 物探点号
     # print(geophysical_point)
     work_function = 2
     upload_time = json.loads(all_data[2].get('value'))[0]  # 审批提交时间
@@ -417,31 +417,31 @@ def func_square(data_dic):
     # print(monitor_time)
 
     # 方管
-    canal_width = all_data[7].get('value')
+    canal_width = all_data[7].get('value').strip()
     # print(canal_width)
 
-    liquid1 = all_data[8].get('value')
+    liquid1 = all_data[8].get('value').strip()
     # print(liquid1)
-    flow1 = all_data[9].get('value')
+    flow1 = all_data[9].get('value').strip()
     # print(flow1)
-    liquid2 = all_data[10].get('value')
+    liquid2 = all_data[10].get('value').strip()
     # print(liquid2)
-    flow2 = all_data[11].get('value')
+    flow2 = all_data[11].get('value').strip()
     # print(flow2)
-    liquid3 = all_data[12].get('value')
+    liquid3 = all_data[12].get('value').strip()
     # print(liquid3)
-    flow3 = all_data[13].get('value')
+    flow3 = all_data[13].get('value').strip()
     # print(flow3)
 
     # 样品编号
-    sample_number = all_data[14].get('value')
+    sample_number = all_data[14].get('value').strip()
     # print(sample_number)
 
     # 监测指标
-    indicator = all_data[15].get('value')
+    indicator = all_data[15].get('value').strip()
 
     # 样品数量
-    sample_count = all_data[16].get('value')
+    sample_count = all_data[16].get('value').strip()
 
     sample_photo_link_lst = json.loads(all_data[17].get('value'))  # 钉钉回调的样品照链接
     sample_photo_lst = []
@@ -453,13 +453,13 @@ def func_square(data_dic):
     # print(sample_photo_lst)
 
     # 样品颜色
-    sample_color = all_data[18].get('value')
+    sample_color = all_data[18].get('value').strip()
     # print(sample_color)
     # 样品气味
-    sample_odor = all_data[19].get('value')
+    sample_odor = all_data[19].get('value').strip()
     # print(sample_odor)
     # 样品浊度
-    sample_turbidity = all_data[20].get('value')
+    sample_turbidity = all_data[20].get('value').strip()
     # print(sample_turbidity)
 
     try:
@@ -536,9 +536,9 @@ def func_square(data_dic):
 
 def func_machine(data_dic):
     all_data = data_dic.get('process_instance').get('form_component_values')
-    name = all_data[0].get('value')  # 监测点
+    name = all_data[0].get('value').strip()  # 监测点
     # print(name)
-    geophysical_point = all_data[1].get('value')  # 物探点号
+    geophysical_point = all_data[1].get('value').strip()  # 物探点号
     # print(geophysical_point)
     work_function = 3
     upload_time = json.loads(all_data[2].get('value'))[0]  # 审批提交时间
@@ -603,14 +603,14 @@ def func_machine(data_dic):
     # print(monitor_time)
 
     # 样品编号
-    sample_number = all_data[9].get('value')
+    sample_number = all_data[9].get('value').strip()
     # print(sample_number)
 
     # 监测指标
-    indicator = all_data[10].get('value')
+    indicator = all_data[10].get('value').strip()
 
     # 样品数量
-    sample_count = all_data[11].get('value')
+    sample_count = all_data[11].get('value').strip()
 
     sample_photo_link_lst = json.loads(all_data[12].get('value'))  # 样品照
     sample_photo_lst = []
@@ -622,13 +622,13 @@ def func_machine(data_dic):
     # print(sample_photo_lst)
 
     # 样品颜色
-    sample_color = all_data[13].get('value')
+    sample_color = all_data[13].get('value').strip()
     # print(sample_color)
     # 样品气味
-    sample_odor = all_data[14].get('value')
+    sample_odor = all_data[14].get('value').strip()
     # print(sample_odor)
     # 样品浊度
-    sample_turbidity = all_data[15].get('value')
+    sample_turbidity = all_data[15].get('value').strip()
     # print(sample_turbidity)
 
     try:
@@ -704,10 +704,10 @@ def func_machine(data_dic):
 
 def func_unable(data_dic):
     all_data = data_dic.get('process_instance').get('form_component_values')
-    name = all_data[0].get('value')  # 监测点
+    name = all_data[0].get('value').strip()  # 监测点
     people = data_dic.get('process_instance').get('title').split('提交')[0]  # 监测者/采样者
     # print(name)
-    geophysical_point = all_data[1].get('value')  # 物探点号
+    geophysical_point = all_data[1].get('value').strip()  # 物探点号
     # print(geophysical_point)
     work_function = 4
     upload_time = json.loads(all_data[2].get('value'))[0]  # 审批提交时间
@@ -734,7 +734,7 @@ def func_unable(data_dic):
             water_photo_lst.append(img_path)
     # print(water_photo_lst)
 
-    not_monitor_reason = all_data[5].get('value')
+    not_monitor_reason = all_data[5].get('value').strip()
     # print(not_monitor_reason)
 
     try:
