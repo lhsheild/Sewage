@@ -41,7 +41,7 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th class="hidden">id</th>
+                    <th>id</th>
                     <th>监测点号</th>
                     <th>物探点号</th>
                     <th>监测方法</th>
@@ -54,7 +54,7 @@
                 {% for  monitor in monitors %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
-                        <td class="hidden">{{ monitor.id }}</td>
+                        <td>{{ monitor.id }}</td>
                         <td>{{ monitor.name }}</td>
                         <td>{{ monitor.geophysical_point }}</td>
                         <td>

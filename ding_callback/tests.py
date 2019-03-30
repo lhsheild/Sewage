@@ -43,11 +43,16 @@ if __name__ == '__main__':
     #     for s in ss:
     #         print(m.name, '**',s.sample_date, '**', s.sample_time)
 
-    l = [1, 2, 3, 4, 5, 6, 7, 8, 9, 30, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
-    for c, i in enumerate(l, 1):
-        if c <= 3:
-            print('{}<=3'.format(i))
-        if 4 <= c <= 6:
-            print('4<={}<=6'.format(i))
-        if 7 <= c <= 9:
-            print('7<={}<=9'.format(i))
+    # l = [1, 2, 3, 4, 5, 6, 7, 8, 9, 30, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+    # for c, i in enumerate(l, 1):
+    #     if c <= 3:
+    #         print('{}<=3'.format(i))
+    #     if 4 <= c <= 6:
+    #         print('4<={}<=6'.format(i))
+    #     if 7 <= c <= 9:
+    #         print('7<={}<=9'.format(i))
+
+    info_excel = openpyxl.load_workbook(r'E:\Projects\Python_Projects\Sewage\media\excel\监测点信息.xlsx')
+    infosheet = info_excel['流量']
+    t = infosheet.max_row
+    print(t)

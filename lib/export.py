@@ -35,6 +35,25 @@ def ex_container(monitor_objs):
             os.mkdir(output_path_for_photo_per_monitor)
         shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'), output_path_per_monitor)  # 监测点对应统计表excel表格
         shutil.copy(os.path.join(my_setting.excel_folder, '流量表.xlsx'), output_path_per_monitor)  # 监测点对应流量表excel表格
+        shutil.copy(os.path.join(my_setting.excel_folder, '监测点信息.xlsx'), output_path_per_monitor)  # 监测点对应监测点信息excel表格
+        # 监测点信息表
+        info_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
+        monitor_sheet = info_excel['监测点']
+        monitor_sheet['A{}'.format(2)] = monitor.id
+        monitor_sheet['B{}'.format(2)] = monitor.name
+        monitor_sheet['C{}'.format(2)] = monitor.geophysical_point
+        monitor_sheet['D{}'.format(2)] = monitor.people
+        if monitor.work_function == 0:
+            monitor_sheet['E{}'.format(2)] = '容器法'
+        elif monitor.work_function == 1:
+            monitor_sheet['E{}'.format(2)] = '流速法（圆管）'
+        elif monitor.work_function == 2:
+            monitor_sheet['E{}'.format(2)] = '流速法（方渠）'
+        elif monitor.work_function == 3:
+            monitor_sheet['E{}'.format(2)] = '仪器法'
+        else:
+            monitor_sheet['E{}'.format(2)] = '无法监测'
+        monitor_sheet['F{}'.format(2)] = monitor.not_monitor_reason
         # 外景照
         exterior_photo_lst = json.loads(monitor.exterior_photo)
         exterior_photo_lst = list_split(exterior_photo_lst)
@@ -52,10 +71,38 @@ def ex_container(monitor_objs):
             shutil.copy('{}{}{}'.format(settings.BASE_DIR, os.sep, work_photo), output_path_for_photo_per_monitor)
 
         # 样品
+        sample_sheet = info_excel['样品']
+        sample_sheet_max_row = sample_sheet.max_row
         samples = monitor.sample.all().order_by('sample_date', 'sample_time')
         static_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
         static_sample = static_excel['水质']
         for sample_count, sample in enumerate(samples, 1):
+            sample_sheet['A{}'.format(sample_sheet_max_row + sample_count)] = sample.id
+            sample_sheet['B{}'.format(sample_sheet_max_row + sample_count)] = sample.monitor_point.id
+            sample_sheet['C{}'.format(sample_sheet_max_row + sample_count)] = sample.people
+            sample_sheet['D{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_date
+            sample_sheet['E{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_time
+            sample_sheet['F{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_number
+            sample_sheet['G{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_color
+            sample_sheet['H{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_odor
+            sample_sheet['I{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_turbidity
+            sample_sheet['J{}'.format(sample_sheet_max_row + sample_count)] = sample.monitor_task
+            sample_sheet['K{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_count
+            sample_sheet['L{}'.format(sample_sheet_max_row + sample_count)] = sample.SS
+            sample_sheet['M{}'.format(sample_sheet_max_row + sample_count)] = sample.NH3_N
+            sample_sheet['N{}'.format(sample_sheet_max_row + sample_count)] = sample.TP
+            sample_sheet['O{}'.format(sample_sheet_max_row + sample_count)] = sample.TN
+            sample_sheet['P{}'.format(sample_sheet_max_row + sample_count)] = sample.COD
+            sample_sheet['Q{}'.format(sample_sheet_max_row + sample_count)] = sample.BOD
+            sample_sheet['R{}'.format(sample_sheet_max_row + sample_count)] = sample.AIS
+            sample_sheet['S{}'.format(sample_sheet_max_row + sample_count)] = sample.AFVO
+            sample_sheet['T{}'.format(sample_sheet_max_row + sample_count)] = sample.DO
+            sample_sheet['U{}'.format(sample_sheet_max_row + sample_count)] = sample.FLOW
+            sample_sheet['V{}'.format(sample_sheet_max_row + sample_count)] = sample.CR
+            sample_sheet['W{}'.format(sample_sheet_max_row + sample_count)] = sample.ORP
+            sample_sheet['X{}'.format(sample_sheet_max_row + sample_count)] = sample.SinkableS
+            sample_sheet['Y{}'.format(sample_sheet_max_row + sample_count)] = sample.Sulfide
+            sample_sheet['Z{}'.format(sample_sheet_max_row + sample_count)] = sample.Cyanide
             # 样品照
             sample_photo_lst = json.loads(sample.sample_photo)
             sample_photo_lst = list_split(sample_photo_lst)
@@ -77,6 +124,8 @@ def ex_container(monitor_objs):
         static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
 
         # 流量
+        info_flow_sheet = info_excel['流量']
+        flow_sheet_max_row = info_flow_sheet.max_row
         flows = monitor.flow.all().order_by('flow_date', 'flow_time')
         day_avg_flow_lst = []  # 平均日流量列表
         final_monitor_date = None
@@ -84,6 +133,34 @@ def ex_container(monitor_objs):
         flow_sheet = flow_excel['流量']
         # print(monitor.name)
         for flow_count, flow in enumerate(flows, 1):
+            info_flow_sheet['A{}'.format(flow_sheet_max_row + flow_count)] = flow.id
+            info_flow_sheet['B{}'.format(flow_sheet_max_row + flow_count)] = flow.monitor_point.id
+            info_flow_sheet['C{}'.format(flow_sheet_max_row + flow_count)] = flow.people
+            info_flow_sheet['D{}'.format(flow_sheet_max_row + flow_count)] = flow.flow_date
+            info_flow_sheet['E{}'.format(flow_sheet_max_row + flow_count)] = flow.flow_time
+            info_flow_sheet['F{}'.format(flow_sheet_max_row + flow_count)] = flow.time1
+            info_flow_sheet['G{}'.format(flow_sheet_max_row + flow_count)] = flow.volume1
+            info_flow_sheet['H{}'.format(flow_sheet_max_row + flow_count)] = flow.time2
+            info_flow_sheet['I{}'.format(flow_sheet_max_row + flow_count)] = flow.volume2
+            info_flow_sheet['J{}'.format(flow_sheet_max_row + flow_count)] = flow.time3
+            info_flow_sheet['K{}'.format(flow_sheet_max_row + flow_count)] = flow.volume3
+            info_flow_sheet['L{}'.format(flow_sheet_max_row + flow_count)] = flow.diameter
+            info_flow_sheet['M{}'.format(flow_sheet_max_row + flow_count)] = flow.canal_width
+            info_flow_sheet['N{}'.format(flow_sheet_max_row + flow_count)] = flow.mud_depth
+            if monitor.work_function == 1:
+                info_flow_sheet['O{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_lequid_level1
+                info_flow_sheet['P{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_instantaneous_flow_rate1
+                info_flow_sheet['Q{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_lequid_level2
+                info_flow_sheet['R{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_instantaneous_flow_rate2
+                info_flow_sheet['S{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_lequid_level3
+                info_flow_sheet['T{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_instantaneous_flow_rate3
+            elif monitor.work_function == 2:
+                info_flow_sheet['O{}'.format(flow_sheet_max_row + flow_count)] = flow.square_lequid_level1
+                info_flow_sheet['P{}'.format(flow_sheet_max_row + flow_count)] = flow.square_instantaneous_flow_rate1
+                info_flow_sheet['Q{}'.format(flow_sheet_max_row + flow_count)] = flow.square_lequid_level2
+                info_flow_sheet['R{}'.format(flow_sheet_max_row + flow_count)] = flow.square_instantaneous_flow_rate2
+                info_flow_sheet['S{}'.format(flow_sheet_max_row + flow_count)] = flow.square_lequid_level3
+                info_flow_sheet['T{}'.format(flow_sheet_max_row + flow_count)] = flow.square_instantaneous_flow_rate3
             # print(flow_count)
             if flow_count <= 3:
                 flow_sheet['A4'] = monitor.name
@@ -316,6 +393,7 @@ def ex_container(monitor_objs):
         static_flow['Q4'] = '容器法'
         static_flow['R4'] = monitor.people
         static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        info_excel.save(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
     file_news = time_str + '.zip'
     file_news = my_setting.export_folder + os.sep + file_news
     with zipfile.ZipFile(file_news, 'w', zipfile.ZIP_DEFLATED) as zf:
@@ -352,6 +430,25 @@ def ex_circle(monitor_objs):
             os.mkdir(output_path_for_photo_per_monitor)
         shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'), output_path_per_monitor)  # 监测点对应统计表excel表格
         shutil.copy(os.path.join(my_setting.excel_folder, '流量表(圆管).xlsx'), output_path_per_monitor)  # 监测点对应流量表excel表格
+        shutil.copy(os.path.join(my_setting.excel_folder, '监测点信息.xlsx'), output_path_per_monitor)  # 监测点对应监测点信息excel表格
+        # 监测点信息表
+        info_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
+        monitor_sheet = info_excel['监测点']
+        monitor_sheet['A{}'.format(2)] = monitor.id
+        monitor_sheet['B{}'.format(2)] = monitor.name
+        monitor_sheet['C{}'.format(2)] = monitor.geophysical_point
+        monitor_sheet['D{}'.format(2)] = monitor.people
+        if monitor.work_function == 0:
+            monitor_sheet['E{}'.format(2)] = '容器法'
+        elif monitor.work_function == 1:
+            monitor_sheet['E{}'.format(2)] = '流速法（圆管）'
+        elif monitor.work_function == 2:
+            monitor_sheet['E{}'.format(2)] = '流速法（方渠）'
+        elif monitor.work_function == 3:
+            monitor_sheet['E{}'.format(2)] = '仪器法'
+        else:
+            monitor_sheet['E{}'.format(2)] = '无法监测'
+        monitor_sheet['F{}'.format(2)] = monitor.not_monitor_reason
         # 外景照
         exterior_photo_lst = json.loads(monitor.exterior_photo)
         exterior_photo_lst = list_split(exterior_photo_lst)
@@ -369,10 +466,38 @@ def ex_circle(monitor_objs):
             shutil.copy('{}{}{}'.format(settings.BASE_DIR, os.sep, work_photo), output_path_for_photo_per_monitor)
 
         # 样品
+        sample_sheet = info_excel['样品']
+        sample_sheet_max_row = sample_sheet.max_row
         samples = monitor.sample.all().order_by('sample_date', 'sample_time')
         static_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
         static_sample = static_excel['水质']
         for sample_count, sample in enumerate(samples, 1):
+            sample_sheet['A{}'.format(sample_sheet_max_row + sample_count)] = sample.id
+            sample_sheet['B{}'.format(sample_sheet_max_row + sample_count)] = sample.monitor_point.id
+            sample_sheet['C{}'.format(sample_sheet_max_row + sample_count)] = sample.people
+            sample_sheet['D{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_date
+            sample_sheet['E{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_time
+            sample_sheet['F{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_number
+            sample_sheet['G{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_color
+            sample_sheet['H{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_odor
+            sample_sheet['I{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_turbidity
+            sample_sheet['J{}'.format(sample_sheet_max_row + sample_count)] = sample.monitor_task
+            sample_sheet['K{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_count
+            sample_sheet['L{}'.format(sample_sheet_max_row + sample_count)] = sample.SS
+            sample_sheet['M{}'.format(sample_sheet_max_row + sample_count)] = sample.NH3_N
+            sample_sheet['N{}'.format(sample_sheet_max_row + sample_count)] = sample.TP
+            sample_sheet['O{}'.format(sample_sheet_max_row + sample_count)] = sample.TN
+            sample_sheet['P{}'.format(sample_sheet_max_row + sample_count)] = sample.COD
+            sample_sheet['Q{}'.format(sample_sheet_max_row + sample_count)] = sample.BOD
+            sample_sheet['R{}'.format(sample_sheet_max_row + sample_count)] = sample.AIS
+            sample_sheet['S{}'.format(sample_sheet_max_row + sample_count)] = sample.AFVO
+            sample_sheet['T{}'.format(sample_sheet_max_row + sample_count)] = sample.DO
+            sample_sheet['U{}'.format(sample_sheet_max_row + sample_count)] = sample.FLOW
+            sample_sheet['V{}'.format(sample_sheet_max_row + sample_count)] = sample.CR
+            sample_sheet['W{}'.format(sample_sheet_max_row + sample_count)] = sample.ORP
+            sample_sheet['X{}'.format(sample_sheet_max_row + sample_count)] = sample.SinkableS
+            sample_sheet['Y{}'.format(sample_sheet_max_row + sample_count)] = sample.Sulfide
+            sample_sheet['Z{}'.format(sample_sheet_max_row + sample_count)] = sample.Cyanide
             # 样品照
             sample_photo_lst = json.loads(sample.sample_photo)
             sample_photo_lst = list_split(sample_photo_lst)
@@ -394,12 +519,42 @@ def ex_circle(monitor_objs):
         static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
 
         # 流量
+        info_flow_sheet = info_excel['流量']
+        flow_sheet_max_row = info_flow_sheet.max_row
         flows = monitor.flow.all().order_by('flow_date', 'flow_time')
         day_avg_flow_lst = []  # 平均日流量列表
         final_monitor_date = None
         flow_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '流量表(圆管).xlsx'))
         flow_sheet = flow_excel['流量']
         for flow_count, flow in enumerate(flows, 1):
+            info_flow_sheet['A{}'.format(flow_sheet_max_row + flow_count)] = flow.id
+            info_flow_sheet['B{}'.format(flow_sheet_max_row + flow_count)] = flow.monitor_point.id
+            info_flow_sheet['C{}'.format(flow_sheet_max_row + flow_count)] = flow.people
+            info_flow_sheet['D{}'.format(flow_sheet_max_row + flow_count)] = flow.flow_date
+            info_flow_sheet['E{}'.format(flow_sheet_max_row + flow_count)] = flow.flow_time
+            info_flow_sheet['F{}'.format(flow_sheet_max_row + flow_count)] = flow.time1
+            info_flow_sheet['G{}'.format(flow_sheet_max_row + flow_count)] = flow.volume1
+            info_flow_sheet['H{}'.format(flow_sheet_max_row + flow_count)] = flow.time2
+            info_flow_sheet['I{}'.format(flow_sheet_max_row + flow_count)] = flow.volume2
+            info_flow_sheet['J{}'.format(flow_sheet_max_row + flow_count)] = flow.time3
+            info_flow_sheet['K{}'.format(flow_sheet_max_row + flow_count)] = flow.volume3
+            info_flow_sheet['L{}'.format(flow_sheet_max_row + flow_count)] = flow.diameter
+            info_flow_sheet['M{}'.format(flow_sheet_max_row + flow_count)] = flow.canal_width
+            info_flow_sheet['N{}'.format(flow_sheet_max_row + flow_count)] = flow.mud_depth
+            if monitor.work_function == 1:
+                info_flow_sheet['O{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_lequid_level1
+                info_flow_sheet['P{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_instantaneous_flow_rate1
+                info_flow_sheet['Q{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_lequid_level2
+                info_flow_sheet['R{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_instantaneous_flow_rate2
+                info_flow_sheet['S{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_lequid_level3
+                info_flow_sheet['T{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_instantaneous_flow_rate3
+            elif monitor.work_function == 2:
+                info_flow_sheet['O{}'.format(flow_sheet_max_row + flow_count)] = flow.square_lequid_level1
+                info_flow_sheet['P{}'.format(flow_sheet_max_row + flow_count)] = flow.square_instantaneous_flow_rate1
+                info_flow_sheet['Q{}'.format(flow_sheet_max_row + flow_count)] = flow.square_lequid_level2
+                info_flow_sheet['R{}'.format(flow_sheet_max_row + flow_count)] = flow.square_instantaneous_flow_rate2
+                info_flow_sheet['S{}'.format(flow_sheet_max_row + flow_count)] = flow.square_lequid_level3
+                info_flow_sheet['T{}'.format(flow_sheet_max_row + flow_count)] = flow.square_instantaneous_flow_rate3
             # print(flow_count)
             if flow_count <= 3:
                 flow_sheet['A4'] = monitor.name
@@ -628,6 +783,7 @@ def ex_circle(monitor_objs):
         static_flow['Q4'] = '流速法（圆管）'
         static_flow['R4'] = monitor.people
         static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        info_excel.save(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
     file_news = time_str + '.zip'
     file_news = my_setting.export_folder + os.sep + file_news
     with zipfile.ZipFile(file_news, 'w', zipfile.ZIP_DEFLATED) as zf:
@@ -664,6 +820,25 @@ def ex_square(monitor_objs):
             os.mkdir(output_path_for_photo_per_monitor)
         shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'), output_path_per_monitor)  # 监测点对应统计表excel表格
         shutil.copy(os.path.join(my_setting.excel_folder, '流量表(方渠).xlsx'), output_path_per_monitor)  # 监测点对应流量表excel表格
+        shutil.copy(os.path.join(my_setting.excel_folder, '监测点信息.xlsx'), output_path_per_monitor)  # 监测点对应监测点信息excel表格
+        # 监测点信息表
+        info_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
+        monitor_sheet = info_excel['监测点']
+        monitor_sheet['A{}'.format(2)] = monitor.id
+        monitor_sheet['B{}'.format(2)] = monitor.name
+        monitor_sheet['C{}'.format(2)] = monitor.geophysical_point
+        monitor_sheet['D{}'.format(2)] = monitor.people
+        if monitor.work_function == 0:
+            monitor_sheet['E{}'.format(2)] = '容器法'
+        elif monitor.work_function == 1:
+            monitor_sheet['E{}'.format(2)] = '流速法（圆管）'
+        elif monitor.work_function == 2:
+            monitor_sheet['E{}'.format(2)] = '流速法（方渠）'
+        elif monitor.work_function == 3:
+            monitor_sheet['E{}'.format(2)] = '仪器法'
+        else:
+            monitor_sheet['E{}'.format(2)] = '无法监测'
+        monitor_sheet['F{}'.format(2)] = monitor.not_monitor_reason
         # 外景照
         exterior_photo_lst = json.loads(monitor.exterior_photo)
         exterior_photo_lst = list_split(exterior_photo_lst)
@@ -681,10 +856,38 @@ def ex_square(monitor_objs):
             shutil.copy('{}{}{}'.format(settings.BASE_DIR, os.sep, work_photo), output_path_for_photo_per_monitor)
 
         # 样品
+        sample_sheet = info_excel['样品']
+        sample_sheet_max_row = sample_sheet.max_row
         samples = monitor.sample.all().order_by('sample_date', 'sample_time')
         static_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
         static_sample = static_excel['水质']
         for sample_count, sample in enumerate(samples, 1):
+            sample_sheet['A{}'.format(sample_sheet_max_row + sample_count)] = sample.id
+            sample_sheet['B{}'.format(sample_sheet_max_row + sample_count)] = sample.monitor_point.id
+            sample_sheet['C{}'.format(sample_sheet_max_row + sample_count)] = sample.people
+            sample_sheet['D{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_date
+            sample_sheet['E{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_time
+            sample_sheet['F{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_number
+            sample_sheet['G{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_color
+            sample_sheet['H{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_odor
+            sample_sheet['I{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_turbidity
+            sample_sheet['J{}'.format(sample_sheet_max_row + sample_count)] = sample.monitor_task
+            sample_sheet['K{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_count
+            sample_sheet['L{}'.format(sample_sheet_max_row + sample_count)] = sample.SS
+            sample_sheet['M{}'.format(sample_sheet_max_row + sample_count)] = sample.NH3_N
+            sample_sheet['N{}'.format(sample_sheet_max_row + sample_count)] = sample.TP
+            sample_sheet['O{}'.format(sample_sheet_max_row + sample_count)] = sample.TN
+            sample_sheet['P{}'.format(sample_sheet_max_row + sample_count)] = sample.COD
+            sample_sheet['Q{}'.format(sample_sheet_max_row + sample_count)] = sample.BOD
+            sample_sheet['R{}'.format(sample_sheet_max_row + sample_count)] = sample.AIS
+            sample_sheet['S{}'.format(sample_sheet_max_row + sample_count)] = sample.AFVO
+            sample_sheet['T{}'.format(sample_sheet_max_row + sample_count)] = sample.DO
+            sample_sheet['U{}'.format(sample_sheet_max_row + sample_count)] = sample.FLOW
+            sample_sheet['V{}'.format(sample_sheet_max_row + sample_count)] = sample.CR
+            sample_sheet['W{}'.format(sample_sheet_max_row + sample_count)] = sample.ORP
+            sample_sheet['X{}'.format(sample_sheet_max_row + sample_count)] = sample.SinkableS
+            sample_sheet['Y{}'.format(sample_sheet_max_row + sample_count)] = sample.Sulfide
+            sample_sheet['Z{}'.format(sample_sheet_max_row + sample_count)] = sample.Cyanide
             # 样品照
             sample_photo_lst = json.loads(sample.sample_photo)
             sample_photo_lst = list_split(sample_photo_lst)
@@ -706,25 +909,56 @@ def ex_square(monitor_objs):
         static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
 
         # 流量
+        info_flow_sheet = info_excel['流量']
+        flow_sheet_max_row = info_flow_sheet.max_row
         flows = monitor.flow.all().order_by('flow_date', 'flow_time')
         day_avg_flow_lst = []  # 平均日流量列表
         final_monitor_date = None
         flow_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '流量表(方渠).xlsx'))
         flow_sheet = flow_excel['流量']
         for flow_count, flow in enumerate(flows, 1):
+            info_flow_sheet['A{}'.format(flow_sheet_max_row + flow_count)] = flow.id
+            info_flow_sheet['B{}'.format(flow_sheet_max_row + flow_count)] = flow.monitor_point.id
+            info_flow_sheet['C{}'.format(flow_sheet_max_row + flow_count)] = flow.people
+            info_flow_sheet['D{}'.format(flow_sheet_max_row + flow_count)] = flow.flow_date
+            info_flow_sheet['E{}'.format(flow_sheet_max_row + flow_count)] = flow.flow_time
+            info_flow_sheet['F{}'.format(flow_sheet_max_row + flow_count)] = flow.time1
+            info_flow_sheet['G{}'.format(flow_sheet_max_row + flow_count)] = flow.volume1
+            info_flow_sheet['H{}'.format(flow_sheet_max_row + flow_count)] = flow.time2
+            info_flow_sheet['I{}'.format(flow_sheet_max_row + flow_count)] = flow.volume2
+            info_flow_sheet['J{}'.format(flow_sheet_max_row + flow_count)] = flow.time3
+            info_flow_sheet['K{}'.format(flow_sheet_max_row + flow_count)] = flow.volume3
+            info_flow_sheet['L{}'.format(flow_sheet_max_row + flow_count)] = flow.diameter
+            info_flow_sheet['M{}'.format(flow_sheet_max_row + flow_count)] = flow.canal_width
+            info_flow_sheet['N{}'.format(flow_sheet_max_row + flow_count)] = flow.mud_depth
+            if monitor.work_function == 1:
+                info_flow_sheet['O{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_lequid_level1
+                info_flow_sheet['P{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_instantaneous_flow_rate1
+                info_flow_sheet['Q{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_lequid_level2
+                info_flow_sheet['R{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_instantaneous_flow_rate2
+                info_flow_sheet['S{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_lequid_level3
+                info_flow_sheet['T{}'.format(flow_sheet_max_row + flow_count)] = flow.cicle_instantaneous_flow_rate3
+            elif monitor.work_function == 2:
+                info_flow_sheet['O{}'.format(flow_sheet_max_row + flow_count)] = flow.square_lequid_level1
+                info_flow_sheet['P{}'.format(flow_sheet_max_row + flow_count)] = flow.square_instantaneous_flow_rate1
+                info_flow_sheet['Q{}'.format(flow_sheet_max_row + flow_count)] = flow.square_lequid_level2
+                info_flow_sheet['R{}'.format(flow_sheet_max_row + flow_count)] = flow.square_instantaneous_flow_rate2
+                info_flow_sheet['S{}'.format(flow_sheet_max_row + flow_count)] = flow.square_lequid_level3
+                info_flow_sheet['T{}'.format(flow_sheet_max_row + flow_count)] = flow.square_instantaneous_flow_rate3
             if flow_count <= 3:
                 flow_sheet['A4'] = monitor.name
                 flow_sheet['B{}'.format(3 + flow_count * 3 - 2)] = flow.flow_time
                 if flow_count == 1:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(4, 7):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -733,14 +967,15 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 4]
                 elif flow_count == 2:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(7, 10):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -749,14 +984,15 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 7]
                 else:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(10, 13):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -772,14 +1008,15 @@ def ex_square(monitor_objs):
                 flow_sheet['B{}'.format(18 + (flow_count - 3) * 3 - 2)] = flow.flow_time
                 if flow_count == 4:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(19, 22):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -788,14 +1025,15 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 19]
                 elif flow_count == 5:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(22, 25):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -804,14 +1042,15 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 22]
                 else:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(25, 28):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -827,14 +1066,15 @@ def ex_square(monitor_objs):
                 flow_sheet['B{}'.format(18 + (flow_count - 6) * 3 - 2)] = flow.flow_time
                 if flow_count == 7:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(34, 37):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -843,14 +1083,15 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 34]
                 elif flow_count == 8:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(37, 40):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -859,14 +1100,15 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 37]
                 else:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(40, 43):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -882,14 +1124,15 @@ def ex_square(monitor_objs):
                 flow_sheet['B{}'.format(18 + (flow_count - 9) * 3 - 2)] = flow.flow_time
                 if flow_count == 10:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(49, 52):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -898,14 +1141,15 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 49]
                 elif flow_count == 11:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(52, 55):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -914,14 +1158,15 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 52]
                 else:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(55, 58):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -937,14 +1182,15 @@ def ex_square(monitor_objs):
                 flow_sheet['B{}'.format(18 + (flow_count - 12) * 3 - 2)] = flow.flow_time
                 if flow_count == 13:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(64, 67):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -953,14 +1199,15 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 64]
                 elif flow_count == 14:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(67, 70):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -969,14 +1216,15 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 67]
                 else:
                     canal_width = flow.canal_width
-                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2, flow.square_lequid_level3]
+                    square_lequid_lst = [flow.square_lequid_level1, flow.square_lequid_level2,
+                                         flow.square_lequid_level3]
                     square_instantaneous_flow_lst = [flow.square_instantaneous_flow_rate1,
-                                                    flow.square_instantaneous_flow_rate2,
-                                                    flow.square_instantaneous_flow_rate3]
-                    flow1 = canal_width*flow.square_lequid_level1*flow.square_instantaneous_flow_rate1
-                    flow2 = canal_width*flow.square_lequid_level2*flow.square_instantaneous_flow_rate2
-                    flow3 = canal_width*flow.square_lequid_level3*flow.square_instantaneous_flow_rate3
-                    day_avg_flow_lst.append((flow1+flow2+flow3)/3)
+                                                     flow.square_instantaneous_flow_rate2,
+                                                     flow.square_instantaneous_flow_rate3]
+                    flow1 = canal_width * flow.square_lequid_level1 * flow.square_instantaneous_flow_rate1
+                    flow2 = canal_width * flow.square_lequid_level2 * flow.square_instantaneous_flow_rate2
+                    flow3 = canal_width * flow.square_lequid_level3 * flow.square_instantaneous_flow_rate3
+                    day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                     for j in range(70, 73):
                         flow_sheet['D{}'.format(j)].value = canal_width
                         square_lequid = 'E' + str(j)
@@ -1002,6 +1250,7 @@ def ex_square(monitor_objs):
         static_flow['Q4'] = '流速法（方渠）'
         static_flow['R4'] = monitor.people
         static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        info_excel.save(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
     file_news = time_str + '.zip'
     file_news = my_setting.export_folder + os.sep + file_news
     with zipfile.ZipFile(file_news, 'w', zipfile.ZIP_DEFLATED) as zf:
@@ -1038,7 +1287,26 @@ def ex_machine(monitor_objs):
         if not os.path.exists(output_path_for_photo_per_monitor):
             os.mkdir(output_path_for_photo_per_monitor)
         shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'), output_path_per_monitor)  # 监测点对应统计表excel表格
-
+        shutil.copy(os.path.join(my_setting.excel_folder, '监测点信息.xlsx'), output_path_per_monitor)  # 监测点对应监测点信息excel表格
+        # 监测点信息表
+        info_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
+        monitor_sheet = info_excel['监测点']
+        monitor_sheet['A{}'.format(2)] = monitor.id
+        monitor_sheet['B{}'.format(2)] = monitor.name
+        monitor_sheet['C{}'.format(2)] = monitor.geophysical_point
+        monitor_sheet['D{}'.format(2)] = monitor.people
+        if monitor.work_function == 0:
+            monitor_sheet['E{}'.format(2)] = '容器法'
+        elif monitor.work_function == 1:
+            monitor_sheet['E{}'.format(2)] = '流速法（圆管）'
+        elif monitor.work_function == 2:
+            monitor_sheet['E{}'.format(2)] = '流速法（方渠）'
+        elif monitor.work_function == 3:
+            monitor_sheet['E{}'.format(2)] = '仪器法'
+        else:
+            monitor_sheet['E{}'.format(2)] = '无法监测'
+        monitor_sheet['F{}'.format(2)] = monitor.not_monitor_reason
+        # 现状照
         status_photo = json.loads(monitor.status_photo)
         status_photo = list_split(status_photo)
         for sp in status_photo:
@@ -1065,10 +1333,38 @@ def ex_machine(monitor_objs):
             shutil.copy('{}{}{}'.format(settings.BASE_DIR, os.sep, wp), output_path_for_photo_per_monitor)
 
         # 样品
+        sample_sheet = info_excel['样品']
+        sample_sheet_max_row = sample_sheet.max_row
         samples = monitor.sample.all().order_by('sample_date', 'sample_time')
         static_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
         static_sample = static_excel['水质']
         for sample_count, sample in enumerate(samples, 1):
+            sample_sheet['A{}'.format(sample_sheet_max_row + sample_count)] = sample.id
+            sample_sheet['B{}'.format(sample_sheet_max_row + sample_count)] = sample.monitor_point.id
+            sample_sheet['C{}'.format(sample_sheet_max_row + sample_count)] = sample.people
+            sample_sheet['D{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_date
+            sample_sheet['E{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_time
+            sample_sheet['F{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_number
+            sample_sheet['G{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_color
+            sample_sheet['H{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_odor
+            sample_sheet['I{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_turbidity
+            sample_sheet['J{}'.format(sample_sheet_max_row + sample_count)] = sample.monitor_task
+            sample_sheet['K{}'.format(sample_sheet_max_row + sample_count)] = sample.sample_count
+            sample_sheet['L{}'.format(sample_sheet_max_row + sample_count)] = sample.SS
+            sample_sheet['M{}'.format(sample_sheet_max_row + sample_count)] = sample.NH3_N
+            sample_sheet['N{}'.format(sample_sheet_max_row + sample_count)] = sample.TP
+            sample_sheet['O{}'.format(sample_sheet_max_row + sample_count)] = sample.TN
+            sample_sheet['P{}'.format(sample_sheet_max_row + sample_count)] = sample.COD
+            sample_sheet['Q{}'.format(sample_sheet_max_row + sample_count)] = sample.BOD
+            sample_sheet['R{}'.format(sample_sheet_max_row + sample_count)] = sample.AIS
+            sample_sheet['S{}'.format(sample_sheet_max_row + sample_count)] = sample.AFVO
+            sample_sheet['T{}'.format(sample_sheet_max_row + sample_count)] = sample.DO
+            sample_sheet['U{}'.format(sample_sheet_max_row + sample_count)] = sample.FLOW
+            sample_sheet['V{}'.format(sample_sheet_max_row + sample_count)] = sample.CR
+            sample_sheet['W{}'.format(sample_sheet_max_row + sample_count)] = sample.ORP
+            sample_sheet['X{}'.format(sample_sheet_max_row + sample_count)] = sample.SinkableS
+            sample_sheet['Y{}'.format(sample_sheet_max_row + sample_count)] = sample.Sulfide
+            sample_sheet['Z{}'.format(sample_sheet_max_row + sample_count)] = sample.Cyanide
             # 样品照
             sample_photo_lst = json.loads(sample.sample_photo)
             sample_photo_lst = list_split(sample_photo_lst)
@@ -1088,6 +1384,7 @@ def ex_machine(monitor_objs):
             static_sample['M{}'.format(4 + sample_count)] = sample.sample_count  # 样品数量
             static_sample['N{}'.format(4 + sample_count)] = sample.people  # 采样人
         static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        info_excel.save(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
     file_news = time_str + '.zip'
     file_news = my_setting.export_folder + os.sep + file_news
     with zipfile.ZipFile(file_news, 'w', zipfile.ZIP_DEFLATED) as zf:
@@ -1124,6 +1421,26 @@ def ex_unable(monitor_objs):
         if not os.path.exists(output_path_for_photo_per_monitor):
             os.mkdir(output_path_for_photo_per_monitor)
         shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'), output_path_per_monitor)  # 监测点对应统计表excel表格
+        shutil.copy(os.path.join(my_setting.excel_folder, '监测点信息.xlsx'), output_path_per_monitor)  # 监测点对应监测点信息excel表格
+
+        # 监测点信息表
+        info_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
+        monitor_sheet = info_excel['监测点']
+        monitor_sheet['A{}'.format(2)] = monitor.id
+        monitor_sheet['B{}'.format(2)] = monitor.name
+        monitor_sheet['C{}'.format(2)] = monitor.geophysical_point
+        monitor_sheet['D{}'.format(2)] = monitor.people
+        if monitor.work_function == 0:
+            monitor_sheet['E{}'.format(2)] = '容器法'
+        elif monitor.work_function == 1:
+            monitor_sheet['E{}'.format(2)] = '流速法（圆管）'
+        elif monitor.work_function == 2:
+            monitor_sheet['E{}'.format(2)] = '流速法（方渠）'
+        elif monitor.work_function == 3:
+            monitor_sheet['E{}'.format(2)] = '仪器法'
+        else:
+            monitor_sheet['E{}'.format(2)] = '无法监测'
+        monitor_sheet['F{}'.format(2)] = monitor.not_monitor_reason
 
         exterior_photo = json.loads(monitor.exterior_photo)
         exterior_photo = list_split(exterior_photo)
@@ -1146,6 +1463,7 @@ def ex_unable(monitor_objs):
         static_flow['Q4'] = '无法检测'
         static_flow['R4'] = monitor.people
         static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        info_excel.save(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
     file_news = time_str + '.zip'
     file_news = my_setting.export_folder + os.sep + file_news
     with zipfile.ZipFile(file_news, 'w', zipfile.ZIP_DEFLATED) as zf:
