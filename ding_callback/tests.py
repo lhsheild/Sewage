@@ -36,9 +36,18 @@ if __name__ == '__main__':
 
     from ding_callback import models
 
-    ms = models.MonitorPoint.objects.filter(people='曾玄介', work_function=0)
-    for m in ms:
-        ss = m.sample.all().order_by('sample_date', 'sample_time')
+    # ms = models.MonitorPoint.objects.filter(people='曾玄介', work_function=0)
+    # for m in ms:
+    #     ss = m.sample.all().order_by('sample_date', 'sample_time')
+    #
+    #     for s in ss:
+    #         print(m.name, '**',s.sample_date, '**', s.sample_time)
 
-        for s in ss:
-            print(m.name, '**',s.sample_date, '**', s.sample_time)
+    l = [1, 2, 3, 4, 5, 6, 7, 8, 9, 30, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+    for c, i in enumerate(l, 1):
+        if c <= 3:
+            print('{}<=3'.format(i))
+        if 4 <= c <= 6:
+            print('4<={}<=6'.format(i))
+        if 7 <= c <= 9:
+            print('7<={}<=9'.format(i))

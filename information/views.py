@@ -205,8 +205,13 @@ class Export(View):
         mpeople = data_dic.get('exPeople')
         mdatastart = data_dic.get('exDateStart')
         mdataend = data_dic.get('exDateEnd')
-        monitors = monitor_model.MonitorPoint.objects.filter(work_function=mfunc, people=mpeople,
-                                                             start_time__gte=mdatastart, start_time__lte=mdataend)
+        if mpeople:
+            monitors = monitor_model.MonitorPoint.objects.filter(work_function=mfunc, people=mpeople,
+                                                                 start_time__gte=mdatastart, start_time__lte=mdataend)
+        else:
+            monitors = monitor_model.MonitorPoint.objects.filter(work_function=mfunc,
+                                                                 start_time__gte=mdatastart, start_time__lte=mdataend)
+
         if monitors:
             from lib import export
             from conf import my_setting
@@ -216,7 +221,7 @@ class Export(View):
                 print(zipfile)
                 return HttpResponse(zipfile)
         else:
-            return HttpResponse('查询为空')
+            return HttpResponse(None)
 
 
 class Download(View):
@@ -226,9 +231,12 @@ class Download(View):
         from conf import my_setting
         import os
         filename = my_setting.export_folder + os.sep + filename
-        from django.http import StreamingHttpResponse
-        from lib.common import file_iterator
-        response = StreamingHttpResponse(file_iterator(filename))
-        response['Content-Type'] = 'application/octet-stream'  # 设置头信息，告诉浏览器这是个文件
-        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(filename)
-        return response
+        if filename:
+            from django.http import StreamingHttpResponse
+            from lib.common import file_iterator
+            response = StreamingHttpResponse(file_iterator(filename))
+            response['Content-Type'] = 'application/octet-stream'  # 设置头信息，告诉浏览器这是个文件
+            response['Content-Disposition'] = 'attachment;filename="{0}"'.format(filename)
+            return response
+        else:
+            return HttpResponse(None)
