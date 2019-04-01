@@ -382,7 +382,7 @@ def ex_container(monitor_objs):
                 flow_sheet['A62'] = intro
                 flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表.xlsx'))
                 final_monitor_date = flow.flow_date
-        flow_excel.save(os.path.join(output_path_per_monitor, '流量表.xlsx'))
+        flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表.xlsx'))
         day_avg_flow = mean(day_avg_flow_lst)  # 平均一天的流量
         flow_for_whole_day = day_avg_flow * 86400 / 1000
         static_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
