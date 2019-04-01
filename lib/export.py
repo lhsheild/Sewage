@@ -29,12 +29,17 @@ def ex_container(monitor_objs):
     for monitor_count, monitor in enumerate(monitor_objs, 1):
         output_path_per_monitor = os.path.join(output_path, monitor.name)  # 存放每个监测点相应文件的临时路径
         output_path_for_photo_per_monitor = os.path.join(output_path_per_monitor, '照片')  # 存放每个监测点相应照片的临时路径
+        output_path_for_excel_per_monitor = os.path.join(output_path_per_monitor, '成果')  # 存放每个监测点相应Excel文件的临时路径
         if not os.path.exists(output_path_per_monitor):
             os.mkdir(output_path_per_monitor)
         if not os.path.exists(output_path_for_photo_per_monitor):
             os.mkdir(output_path_for_photo_per_monitor)
-        shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'), output_path_per_monitor)  # 监测点对应统计表excel表格
-        shutil.copy(os.path.join(my_setting.excel_folder, '流量表.xlsx'), output_path_per_monitor)  # 监测点对应流量表excel表格
+        if not os.path.exists(output_path_for_excel_per_monitor):
+            os.mkdir(output_path_for_excel_per_monitor)
+        shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'),
+                    output_path_for_excel_per_monitor)  # 监测点对应统计表excel表格
+        shutil.copy(os.path.join(my_setting.excel_folder, '流量表.xlsx'),
+                    output_path_for_excel_per_monitor)  # 监测点对应流量表excel表格
         shutil.copy(os.path.join(my_setting.excel_folder, '监测点信息.xlsx'), output_path_per_monitor)  # 监测点对应监测点信息excel表格
         # 监测点信息表
         info_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
@@ -74,7 +79,7 @@ def ex_container(monitor_objs):
         sample_sheet = info_excel['样品']
         sample_sheet_max_row = sample_sheet.max_row
         samples = monitor.sample.all().order_by('sample_date', 'sample_time')
-        static_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        static_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         static_sample = static_excel['水质']
         for sample_count, sample in enumerate(samples, 1):
             sample_sheet['A{}'.format(sample_sheet_max_row + sample_count)] = sample.id
@@ -116,12 +121,12 @@ def ex_container(monitor_objs):
             static_sample['I{}'.format(4 + sample_count)] = sample.sample_time  # 采样时间段
             static_sample['J{}'.format(4 + sample_count)] = sample.sample_number  # 样品编号
             static_sample[
-                'K{}'.format(
+                'Q{}'.format(
                     4 + sample_count)] = sample.sample_color + '、' + sample.sample_odor + '、' + sample.sample_turbidity  # 样品状态
-            static_sample['L{}'.format(4 + sample_count)] = sample.monitor_task  # 监测项目
-            static_sample['M{}'.format(4 + sample_count)] = sample.sample_count  # 样品数量
-            static_sample['N{}'.format(4 + sample_count)] = sample.people  # 采样人
-        static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+            static_sample['R{}'.format(4 + sample_count)] = sample.monitor_task  # 监测项目
+            static_sample['S{}'.format(4 + sample_count)] = sample.sample_count  # 样品数量
+            static_sample['T{}'.format(4 + sample_count)] = sample.people  # 采样人
+        static_excel.save(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
 
         # 流量
         info_flow_sheet = info_excel['流量']
@@ -129,7 +134,7 @@ def ex_container(monitor_objs):
         flows = monitor.flow.all().order_by('flow_date', 'flow_time')
         day_avg_flow_lst = []  # 平均日流量列表
         final_monitor_date = None
-        flow_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '流量表.xlsx'))
+        flow_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '流量表.xlsx'))
         flow_sheet = flow_excel['流量']
         # print(monitor.name)
         for flow_count, flow in enumerate(flows, 1):
@@ -203,7 +208,7 @@ def ex_container(monitor_objs):
                         flow_sheet[temp_water].value = flow_lst[j - 10]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A2'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表.xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表.xlsx'))
                 final_monitor_date = flow.flow_date
             if 4 <= flow_count <= 6:
                 flow_sheet['A19'] = monitor.name
@@ -246,7 +251,7 @@ def ex_container(monitor_objs):
                         flow_sheet[temp_water].value = flow_lst[j - 25]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A17'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表.xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表.xlsx'))
                 final_monitor_date = flow.flow_date
             if 7 <= flow_count <= 9:
                 flow_sheet['A34'] = monitor.name
@@ -289,12 +294,11 @@ def ex_container(monitor_objs):
                         flow_sheet[temp_water].value = flow_lst[j - 40]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A32'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表.xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表.xlsx'))
                 final_monitor_date = flow.flow_date
             if 10 <= flow_count <= 12:
                 flow_sheet['A49'] = monitor.name
                 flow_sheet['B{}'.format(18 + (flow_count - 9) * 3 - 2)] = flow.flow_time
-                day_avg_flow_lst.append((flow1 + flow2 + flow3) / 3)
                 if flow_count == 10:
                     time_lst = [flow.time1, flow.time2, flow.time3]
                     flow_lst = [flow.volume1, flow.volume2, flow.volume3]
@@ -333,7 +337,7 @@ def ex_container(monitor_objs):
                         flow_sheet[temp_water].value = flow_lst[j - 55]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A47'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表.xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表.xlsx'))
                 final_monitor_date = flow.flow_date
             if 13 <= flow_count <= 15:
                 flow_sheet['A64'] = monitor.name
@@ -376,12 +380,12 @@ def ex_container(monitor_objs):
                         flow_sheet[temp_water].value = flow_lst[j - 70]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A62'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表.xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表.xlsx'))
                 final_monitor_date = flow.flow_date
         flow_excel.save(os.path.join(output_path_per_monitor, '流量表.xlsx'))
         day_avg_flow = mean(day_avg_flow_lst)  # 平均一天的流量
         flow_for_whole_day = day_avg_flow * 86400 / 1000
-        static_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        static_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         static_flow = static_excel['流量']
         static_flow['A4'] = monitor_count
         static_flow['B4'] = monitor.name
@@ -392,7 +396,7 @@ def ex_container(monitor_objs):
         static_flow['O4'] = flow_for_whole_day
         static_flow['Q4'] = '容器法'
         static_flow['R4'] = monitor.people
-        static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        static_excel.save(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         info_excel.save(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
     file_news = time_str + '.zip'
     file_news = my_setting.export_folder + os.sep + file_news
@@ -424,12 +428,17 @@ def ex_circle(monitor_objs):
     for monitor_count, monitor in enumerate(monitor_objs, 1):
         output_path_per_monitor = os.path.join(output_path, monitor.name)  # 存放每个监测点相应文件的临时路径
         output_path_for_photo_per_monitor = os.path.join(output_path_per_monitor, '照片')  # 存放每个监测点相应照片的临时路径
+        output_path_for_excel_per_monitor = os.path.join(output_path_per_monitor, '成果')  # 存放每个监测点相应Excel文件的临时路径
         if not os.path.exists(output_path_per_monitor):
             os.mkdir(output_path_per_monitor)
         if not os.path.exists(output_path_for_photo_per_monitor):
             os.mkdir(output_path_for_photo_per_monitor)
-        shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'), output_path_per_monitor)  # 监测点对应统计表excel表格
-        shutil.copy(os.path.join(my_setting.excel_folder, '流量表(圆管).xlsx'), output_path_per_monitor)  # 监测点对应流量表excel表格
+        if not os.path.exists(output_path_for_excel_per_monitor):
+            os.mkdir(output_path_for_excel_per_monitor)
+        shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'),
+                    output_path_for_excel_per_monitor)  # 监测点对应统计表excel表格
+        shutil.copy(os.path.join(my_setting.excel_folder, '流量表(圆管).xlsx'),
+                    output_path_for_excel_per_monitor)  # 监测点对应流量表excel表格
         shutil.copy(os.path.join(my_setting.excel_folder, '监测点信息.xlsx'), output_path_per_monitor)  # 监测点对应监测点信息excel表格
         # 监测点信息表
         info_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
@@ -469,7 +478,7 @@ def ex_circle(monitor_objs):
         sample_sheet = info_excel['样品']
         sample_sheet_max_row = sample_sheet.max_row
         samples = monitor.sample.all().order_by('sample_date', 'sample_time')
-        static_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        static_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         static_sample = static_excel['水质']
         for sample_count, sample in enumerate(samples, 1):
             sample_sheet['A{}'.format(sample_sheet_max_row + sample_count)] = sample.id
@@ -511,12 +520,12 @@ def ex_circle(monitor_objs):
             static_sample['I{}'.format(4 + sample_count)] = sample.sample_time  # 采样时间段
             static_sample['J{}'.format(4 + sample_count)] = sample.sample_number  # 样品编号
             static_sample[
-                'K{}'.format(
+                'Q{}'.format(
                     4 + sample_count)] = sample.sample_color + '、' + sample.sample_odor + '、' + sample.sample_turbidity  # 样品状态
-            static_sample['L{}'.format(4 + sample_count)] = sample.monitor_task  # 监测项目
-            static_sample['M{}'.format(4 + sample_count)] = sample.sample_count  # 样品数量
-            static_sample['N{}'.format(4 + sample_count)] = sample.people  # 采样人
-        static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+            static_sample['R{}'.format(4 + sample_count)] = sample.monitor_task  # 监测项目
+            static_sample['S{}'.format(4 + sample_count)] = sample.sample_count  # 样品数量
+            static_sample['T{}'.format(4 + sample_count)] = sample.people  # 采样人
+        static_excel.save(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
 
         # 流量
         info_flow_sheet = info_excel['流量']
@@ -524,7 +533,7 @@ def ex_circle(monitor_objs):
         flows = monitor.flow.all().order_by('flow_date', 'flow_time')
         day_avg_flow_lst = []  # 平均日流量列表
         final_monitor_date = None
-        flow_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '流量表(圆管).xlsx'))
+        flow_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '流量表(圆管).xlsx'))
         flow_sheet = flow_excel['流量']
         for flow_count, flow in enumerate(flows, 1):
             info_flow_sheet['A{}'.format(flow_sheet_max_row + flow_count)] = flow.id
@@ -597,7 +606,7 @@ def ex_circle(monitor_objs):
                         flow_sheet[cicle_instantaneous_flow].value = cicle_instantaneous_flow_lst[j - 10]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A2'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表(圆管).xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表(圆管).xlsx'))
                 final_monitor_date = flow.flow_date
             if 4 <= flow_count <= 6:
                 flow_sheet['A19'] = monitor.name
@@ -640,7 +649,7 @@ def ex_circle(monitor_objs):
                         flow_sheet[cicle_instantaneous_flow].value = cicle_instantaneous_flow_lst[j - 25]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A17'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表(圆管).xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表(圆管).xlsx'))
                 final_monitor_date = flow.flow_date
             if 7 <= flow_count <= 9:
                 flow_sheet['A34'] = monitor.name
@@ -683,7 +692,7 @@ def ex_circle(monitor_objs):
                         flow_sheet[cicle_instantaneous_flow].value = cicle_instantaneous_flow_lst[j - 40]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A32'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表(圆管).xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表(圆管).xlsx'))
                 final_monitor_date = flow.flow_date
             if 10 <= flow_count <= 12:
                 flow_sheet['A49'] = monitor.name
@@ -726,7 +735,7 @@ def ex_circle(monitor_objs):
                         flow_sheet[cicle_instantaneous_flow].value = cicle_instantaneous_flow_lst[j - 55]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A47'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表(圆管).xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表(圆管).xlsx'))
                 final_monitor_date = flow.flow_date
             if 13 <= flow_count <= 15:
                 flow_sheet['A64'] = monitor.name
@@ -769,10 +778,10 @@ def ex_circle(monitor_objs):
                         flow_sheet[cicle_instantaneous_flow].value = cicle_instantaneous_flow_lst[j - 70]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A62'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表(圆管).xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表(圆管).xlsx'))
                 final_monitor_date = flow.flow_date
-        flow_excel.save(os.path.join(output_path_per_monitor, '流量表(圆管).xlsx'))
-        static_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表(圆管).xlsx'))
+        static_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         static_flow = static_excel['流量']
         static_flow['A4'] = monitor_count
         static_flow['B4'] = monitor.name
@@ -782,7 +791,7 @@ def ex_circle(monitor_objs):
         static_flow['N4'] = '当日00:00至24:00'
         static_flow['Q4'] = '流速法（圆管）'
         static_flow['R4'] = monitor.people
-        static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        static_excel.save(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         info_excel.save(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
     file_news = time_str + '.zip'
     file_news = my_setting.export_folder + os.sep + file_news
@@ -814,15 +823,20 @@ def ex_square(monitor_objs):
     for monitor_count, monitor in enumerate(monitor_objs, 1):
         output_path_per_monitor = os.path.join(output_path, monitor.name)  # 存放每个监测点相应文件的临时路径
         output_path_for_photo_per_monitor = os.path.join(output_path_per_monitor, '照片')  # 存放每个监测点相应照片的临时路径
+        output_path_for_excel_per_monitor = os.path.join(output_path_per_monitor, '成果')  # 存放每个监测点相应Excel文件的临时路径
         if not os.path.exists(output_path_per_monitor):
             os.mkdir(output_path_per_monitor)
         if not os.path.exists(output_path_for_photo_per_monitor):
             os.mkdir(output_path_for_photo_per_monitor)
-        shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'), output_path_per_monitor)  # 监测点对应统计表excel表格
-        shutil.copy(os.path.join(my_setting.excel_folder, '流量表(方渠).xlsx'), output_path_per_monitor)  # 监测点对应流量表excel表格
+        if not os.path.exists(output_path_for_excel_per_monitor):
+            os.mkdir(output_path_for_excel_per_monitor)
+        shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'),
+                    output_path_for_excel_per_monitor)  # 监测点对应统计表excel表格
+        shutil.copy(os.path.join(my_setting.excel_folder, '流量表(方渠).xlsx'),
+                    output_path_for_excel_per_monitor)  # 监测点对应流量表excel表格
         shutil.copy(os.path.join(my_setting.excel_folder, '监测点信息.xlsx'), output_path_per_monitor)  # 监测点对应监测点信息excel表格
         # 监测点信息表
-        info_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
+        info_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '监测点信息.xlsx'))
         monitor_sheet = info_excel['监测点']
         monitor_sheet['A{}'.format(2)] = monitor.id
         monitor_sheet['B{}'.format(2)] = monitor.name
@@ -859,7 +873,7 @@ def ex_square(monitor_objs):
         sample_sheet = info_excel['样品']
         sample_sheet_max_row = sample_sheet.max_row
         samples = monitor.sample.all().order_by('sample_date', 'sample_time')
-        static_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        static_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         static_sample = static_excel['水质']
         for sample_count, sample in enumerate(samples, 1):
             sample_sheet['A{}'.format(sample_sheet_max_row + sample_count)] = sample.id
@@ -901,12 +915,12 @@ def ex_square(monitor_objs):
             static_sample['I{}'.format(4 + sample_count)] = sample.sample_time  # 采样时间段
             static_sample['J{}'.format(4 + sample_count)] = sample.sample_number  # 样品编号
             static_sample[
-                'K{}'.format(
+                'Q{}'.format(
                     4 + sample_count)] = sample.sample_color + '、' + sample.sample_odor + '、' + sample.sample_turbidity  # 样品状态
-            static_sample['L{}'.format(4 + sample_count)] = sample.monitor_task  # 监测项目
-            static_sample['M{}'.format(4 + sample_count)] = sample.sample_count  # 样品数量
-            static_sample['N{}'.format(4 + sample_count)] = sample.people  # 采样人
-        static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+            static_sample['R{}'.format(4 + sample_count)] = sample.monitor_task  # 监测项目
+            static_sample['S{}'.format(4 + sample_count)] = sample.sample_count  # 样品数量
+            static_sample['T{}'.format(4 + sample_count)] = sample.people  # 采样人
+        static_excel.save(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
 
         # 流量
         info_flow_sheet = info_excel['流量']
@@ -914,7 +928,7 @@ def ex_square(monitor_objs):
         flows = monitor.flow.all().order_by('flow_date', 'flow_time')
         day_avg_flow_lst = []  # 平均日流量列表
         final_monitor_date = None
-        flow_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '流量表(方渠).xlsx'))
+        flow_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '流量表(方渠).xlsx'))
         flow_sheet = flow_excel['流量']
         for flow_count, flow in enumerate(flows, 1):
             info_flow_sheet['A{}'.format(flow_sheet_max_row + flow_count)] = flow.id
@@ -1001,7 +1015,7 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 10]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A2'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表(方渠).xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表(方渠).xlsx'))
                 final_monitor_date = flow.flow_date
             if 4 <= flow_count <= 6:
                 flow_sheet['A19'] = monitor.name
@@ -1059,7 +1073,7 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 25]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A17'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表(方渠).xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表(方渠).xlsx'))
                 final_monitor_date = flow.flow_date
             if 7 <= flow_count <= 9:
                 flow_sheet['A34'] = monitor.name
@@ -1117,7 +1131,7 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 40]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A32'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表(方渠).xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表(方渠).xlsx'))
                 final_monitor_date = flow.flow_date
             if 10 <= flow_count <= 12:
                 flow_sheet['A49'] = monitor.name
@@ -1175,7 +1189,7 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 55]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A47'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表(方渠).xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表(方渠).xlsx'))
                 final_monitor_date = flow.flow_date
             if 13 <= flow_count <= 15:
                 flow_sheet['A64'] = monitor.name
@@ -1233,12 +1247,12 @@ def ex_square(monitor_objs):
                         flow_sheet[square_instantaneous_flow].value = square_instantaneous_flow_lst[j - 70]
                 intro = f'监测日期：{flow.flow_date}                    观测者：{monitor.people}                    检查者：'
                 flow_sheet['A62'] = intro
-                flow_excel.save(os.path.join(output_path_per_monitor, '流量表(方渠).xlsx'))
+                flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表(方渠).xlsx'))
                 final_monitor_date = flow.flow_date
-        flow_excel.save(os.path.join(output_path_per_monitor, '流量表(方渠).xlsx'))
+        flow_excel.save(os.path.join(output_path_for_excel_per_monitor, '流量表(方渠).xlsx'))
         day_avg_flow = mean(day_avg_flow_lst)  # 平均一天的流量
         flow_for_whole_day = day_avg_flow * 86400
-        static_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        static_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         static_flow = static_excel['流量']
         static_flow['A4'] = monitor_count
         static_flow['B4'] = monitor.name
@@ -1249,7 +1263,7 @@ def ex_square(monitor_objs):
         static_flow['O4'] = flow_for_whole_day
         static_flow['Q4'] = '流速法（方渠）'
         static_flow['R4'] = monitor.people
-        static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        static_excel.save(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         info_excel.save(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
     file_news = time_str + '.zip'
     file_news = my_setting.export_folder + os.sep + file_news
@@ -1282,12 +1296,17 @@ def ex_machine(monitor_objs):
     for monitor_count, monitor in enumerate(monitor_objs, 1):
         output_path_per_monitor = os.path.join(output_path, monitor.name)  # 存放每个监测点相应文件的临时路径
         output_path_for_photo_per_monitor = os.path.join(output_path_per_monitor, '照片')  # 存放每个监测点相应照片的临时路径
+        output_path_for_excel_per_monitor = os.path.join(output_path_per_monitor, '成果')  # 存放每个监测点相应Excel文件的临时路径
         if not os.path.exists(output_path_per_monitor):
             os.mkdir(output_path_per_monitor)
         if not os.path.exists(output_path_for_photo_per_monitor):
             os.mkdir(output_path_for_photo_per_monitor)
-        shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'), output_path_per_monitor)  # 监测点对应统计表excel表格
-        shutil.copy(os.path.join(my_setting.excel_folder, '监测点信息.xlsx'), output_path_per_monitor)  # 监测点对应监测点信息excel表格
+        if not os.path.exists(output_path_for_excel_per_monitor):
+            os.mkdir(output_path_for_excel_per_monitor)
+        shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'),
+                    output_path_for_excel_per_monitor)  # 监测点对应统计表excel表格
+        shutil.copy(os.path.join(my_setting.excel_folder, '监测点信息.xlsx'),
+                    output_path_for_excel_per_monitor)  # 监测点对应监测点信息excel表格
         # 监测点信息表
         info_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
         monitor_sheet = info_excel['监测点']
@@ -1336,7 +1355,7 @@ def ex_machine(monitor_objs):
         sample_sheet = info_excel['样品']
         sample_sheet_max_row = sample_sheet.max_row
         samples = monitor.sample.all().order_by('sample_date', 'sample_time')
-        static_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+        static_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         static_sample = static_excel['水质']
         for sample_count, sample in enumerate(samples, 1):
             sample_sheet['A{}'.format(sample_sheet_max_row + sample_count)] = sample.id
@@ -1378,12 +1397,12 @@ def ex_machine(monitor_objs):
             static_sample['I{}'.format(4 + sample_count)] = sample.sample_time  # 采样时间段
             static_sample['J{}'.format(4 + sample_count)] = sample.sample_number  # 样品编号
             static_sample[
-                'K{}'.format(
+                'Q{}'.format(
                     4 + sample_count)] = sample.sample_color + '、' + sample.sample_odor + '、' + sample.sample_turbidity  # 样品状态
-            static_sample['L{}'.format(4 + sample_count)] = sample.monitor_task  # 监测项目
-            static_sample['M{}'.format(4 + sample_count)] = sample.sample_count  # 样品数量
-            static_sample['N{}'.format(4 + sample_count)] = sample.people  # 采样人
-        static_excel.save(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
+            static_sample['R{}'.format(4 + sample_count)] = sample.monitor_task  # 监测项目
+            static_sample['S{}'.format(4 + sample_count)] = sample.sample_count  # 样品数量
+            static_sample['T{}'.format(4 + sample_count)] = sample.people  # 采样人
+        static_excel.save(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         info_excel.save(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
     file_news = time_str + '.zip'
     file_news = my_setting.export_folder + os.sep + file_news
@@ -1452,7 +1471,7 @@ def ex_unable(monitor_objs):
         for wfp in water_flow_photo:
             shutil.copy('{}{}{}'.format(settings.BASE_DIR, os.sep, wfp), output_path_per_monitor)
 
-        static_excel = openpyxl.load_workbook(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'))
+        static_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '小区监测统计表.xlsx'))
         static_flow = static_excel['流量']
         static_flow['A4'] = monitor_count
         static_flow['B4'] = monitor.name
