@@ -1,7 +1,9 @@
-from ding_callback.tasks import get_bpms_data_by_bpmsID
 import json
-import requests
 import logging
+
+import requests
+
+from ding_callback.tasks import get_bpms_data_by_bpmsID
 
 logger = logging.getLogger('sewage views')
 
@@ -89,21 +91,28 @@ def get_bms_callback(request):
 
 @csrf_exempt
 def get_failed_callback(request):
+    info_lst = []
     # 获取access_token
     appkey = my_setting.app_key
     appsecret = my_setting.app_secret
     ret = requests.get('https://oapi.dingtalk.com/gettoken?appkey={}&appsecret={}'.format(appkey, appsecret))
     access_token = ret.json().get('access_token')
 
-    # 获取失败回调
-    url = 'https://oapi.dingtalk.com/call_back/get_call_back_failed_result?access_token={}'.format(access_token)
-    get_info = requests.get(url)
-    # 失败列表
-    failed_list = get_info.json().get('failed_list')
-    if failed_list:
-        for i in failed_list:
-            print(i)
-    return HttpResponse('获取失败回调')
+    while True:
+        # 获取失败回调
+        url = 'https://oapi.dingtalk.com/call_back/get_call_back_failed_result?access_token={}'.format(access_token)
+        get_info = requests.get(url).json()
+        info_lst.append(get_info)
+        # 失败列表
+        failed_list = get_info.get('failed_list')
+        if failed_list:
+            for i in failed_list:
+                print(i)
+        if not get_info.get('has_more'):
+            print('没有更多回调')
+            break
+    info_lst = json.dumps(info_lst)
+    return HttpResponse(info_lst)
 
 
 @csrf_exempt
