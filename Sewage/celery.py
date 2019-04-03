@@ -1,5 +1,7 @@
 from __future__ import absolute_import, unicode_literals
+
 import os
+
 from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
@@ -20,3 +22,15 @@ app.autodiscover_tasks()
 @app.task(bind=True)
 def debug_task(self):
     print('Request: {0!r}'.format(self.request))
+
+
+from celery.schedules import crontab
+
+app.conf.update(
+    CELERYBEAT_SCHEDULE={
+        'get_failed_callback': {
+            'task': 'ding_callback.tasks.crontab_get_failed_callback',
+            'schedule': crontab(hour=20, minute=30),
+        }
+    }
+)

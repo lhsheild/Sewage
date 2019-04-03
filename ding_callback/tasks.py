@@ -1,11 +1,12 @@
 from __future__ import absolute_import
-from celery import shared_task
-import requests
-import json
+
 import datetime
-import urllib
+import json
 import os
 from sys import modules
+
+import requests
+from celery import shared_task
 
 from conf import my_setting
 from ding_callback import models
@@ -798,3 +799,36 @@ def save_img(in_args):
         print(e)
     except Exception as e:
         print(e)
+
+
+@shared_task()
+def crontab_get_failed_callback():
+    info_lst = []
+    # 获取access_token
+    appkey = my_setting.app_key
+    appsecret = my_setting.app_secret
+    ret = requests.get('https://oapi.dingtalk.com/gettoken?appkey={}&appsecret={}'.format(appkey, appsecret))
+    access_token = ret.json().get('access_token')
+
+    while True:
+        # 获取失败回调
+        url = 'https://oapi.dingtalk.com/call_back/get_call_back_failed_result?access_token={}'.format(access_token)
+        get_info = requests.get(url).json()
+        info_lst.append(get_info)
+        # 失败列表
+        failed_list = get_info.get('failed_list')
+        print(type(get_info.get('has_more')))
+        if failed_list:
+            for i in failed_list:
+                bpms_callback_data = i.get('bpms_instance_change').get('bpmsCallBackData')
+                if bpms_callback_data.get('result') == 'agree' and bpms_callback_data.get(
+                        'processCode') in my_setting.process_code_lst:
+                    # 获取审批实例ID和审批类型ID
+                    bpms_id = bpms_callback_data.get('processInstanceId')
+                    bpms_code = bpms_callback_data.get('processCode')
+                    c_task = get_bpms_data_by_bpmsID.delay(bpms_id, bpms_code)
+                    c_task_id = c_task.id
+                    print("start running failed callback task：{}".format(c_task_id))
+        if not get_info.get('has_more'):
+            print('没有更多回调')
+            break

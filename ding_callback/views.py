@@ -105,9 +105,18 @@ def get_failed_callback(request):
         info_lst.append(get_info)
         # 失败列表
         failed_list = get_info.get('failed_list')
+        print(type(get_info.get('has_more')))
         if failed_list:
             for i in failed_list:
-                print(i)
+                bpms_callback_data = i.get('bpms_instance_change').get('bpmsCallBackData')
+                if bpms_callback_data.get('result') == 'agree' and bpms_callback_data.get(
+                        'processCode') in my_setting.process_code_lst:
+                    # 获取审批实例ID和审批类型ID
+                    bpms_id = bpms_callback_data.get('processInstanceId')
+                    bpms_code = bpms_callback_data.get('processCode')
+                    c_task = get_bpms_data_by_bpmsID.delay(bpms_id, bpms_code)
+                    c_task_id = c_task.id
+                    print("start running failed callback task：{}".format(c_task_id))
         if not get_info.get('has_more'):
             print('没有更多回调')
             break

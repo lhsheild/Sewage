@@ -1,12 +1,6 @@
-import requests
 import os
-import json
-import datetime
-import itertools
-import openpyxl
-from statistics import mean
 
-from conf import my_setting
+import requests
 
 
 def save_img(list):
@@ -34,25 +28,23 @@ if __name__ == '__main__':
 
     django.setup()
 
-    from ding_callback import models
+    d1 = {'event_time': 1553995508000, 'call_back_tag': 'bpms_instance_change',
+          'bpms_instance_change': {'corpid': 'ding064ce37e8c6fff8435c2f4657eb6378f',
+                                   'bpmsCallBackData': {'createTime': 1553956752000, 'title': '梁昊提交的流量水质监测（容器法）',
+                                                        'staffId': 'manager405',
+                                                        'processCode': 'PROC-ELYJ1A4W-7WJ39FFR3417CDU1EEOZ2-D8YFWXSJ-2',
+                                                        'processInstanceId': '6996855b-d590-4ac7-b132-52d74d96c6e0',
+                                                        'bizCategoryId': '', 'EventType': 'bpms_instance_change',
+                                                        'type': 'delete',
+                                                        'corpId': 'ding064ce37e8c6fff8435c2f4657eb6378f'}}}
 
-    # ms = models.MonitorPoint.objects.filter(people='曾玄介', work_function=0)
-    # for m in ms:
-    #     ss = m.sample.all().order_by('sample_date', 'sample_time')
-    #
-    #     for s in ss:
-    #         print(m.name, '**',s.sample_date, '**', s.sample_time)
-
-    # l = [1, 2, 3, 4, 5, 6, 7, 8, 9, 30, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
-    # for c, i in enumerate(l, 1):
-    #     if c <= 3:
-    #         print('{}<=3'.format(i))
-    #     if 4 <= c <= 6:
-    #         print('4<={}<=6'.format(i))
-    #     if 7 <= c <= 9:
-    #         print('7<={}<=9'.format(i))
-
-    info_excel = openpyxl.load_workbook(r'E:\Projects\Python_Projects\Sewage\media\excel\监测点信息.xlsx')
-    infosheet = info_excel['流量']
-    t = infosheet.max_row
-    print(t)
+    failed_list = {'event_time': 1553959282000, 'call_back_tag': 'bpms_instance_change',
+          'bpms_instance_change': {'corpid': 'ding064ce37e8c6fff8435c2f4657eb6378f',
+                                   'bpmsCallBackData': {'result': 'agree', 'createTime': 1553958191000,
+                                                        'title': '梁昊提交的流量水质监测（容器法）', 'staffId': 'manager405',
+                                                        'processCode': 'PROC-ELYJ1A4W-7WJ39FFR3417CDU1EEOZ2-D8YFWXSJ-2',
+                                                        'processInstanceId': '351783dd-182b-471a-8fd6-540011973b8c',
+                                                        'bizCategoryId': '', 'finishTime': 1553959283000,
+                                                        'EventType': 'bpms_instance_change', 'type': 'finish',
+                                                        'url': 'https://aflow.dingtalk.com/dingtalk/mobile/homepage.htm?corpid=ding064ce37e8c6fff8435c2f4657eb6378f&dd_share=false&showmenu=true&dd_progress=false&back=native&procInstId=351783dd-182b-471a-8fd6-540011973b8c&taskId=&swfrom=isv&dinghash=approval&dd_from=#approval',
+                                                        'corpId': 'ding064ce37e8c6fff8435c2f4657eb6378f'}}}
