@@ -214,7 +214,7 @@
                                    placeholder="选择查询结束日期" name="exDateEnd">
                         </div>
                         <div class="center text-center">
-                            <button type="reset" class="btn btn-danger">重置</button>
+                            <button type="reset" class="btn btn-danger" id="exResetBtn">重置</button>
                             <button type="button" class="btn btn-primary" id="exSureBtn">确定</button>
                         </div>
                     </form>
@@ -287,6 +287,8 @@
             $('#exSureBtn').on('click', function () {
 
                 $(this).attr('disabled', 'true');
+                $(this).text('正在导出...')
+                $("#exResetBtn").attr('disabled', 'true');
 
                 const exSelect = $('#exSelect').val();
                 const exFunc = $('#exFunc').val();
@@ -323,9 +325,13 @@
                                 window.URL.revokeObjectURL(url);
                             }));
                             $('#exSureBtn').removeAttr('disabled');
+                            $('#exSureBtn').text("确定");
+                            $("#exResetBtn").removeAttr('disabled');
                         } else {
                             alert(response.err_msg)
                             $('#exSureBtn').removeAttr('disabled');
+                            $('#exSureBtn').text("确定");
+                            $("#exResetBtn").removeAttr('disabled');
                         }
                     },
                     error: function (response) {

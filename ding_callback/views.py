@@ -163,7 +163,7 @@ def update_callback_api(request):
     data = {'call_back_tag': ['bpms_instance_change'],
             'token': my_setting.token,
             'aes_key': my_setting.aes_key,
-            'url': 'http://lh.vaiwan.com/get_bms_callback/'}
+            'url': 'http://113.16.255.12:11012/get_bms_callback/'}
     data = json.dumps(data)
     get_info = requests.post(url, data=data).json()
     print(get_info)
