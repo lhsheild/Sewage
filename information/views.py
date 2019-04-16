@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, HttpResponse
-from django.views import View
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.views import View
 
 from ding_callback import models as monitor_model
 from lib.login import check_login
@@ -42,7 +43,7 @@ class MonitorInfo(View):  # 监测点列表查询
     def get(self, request):
         from lib.mypage import Page
         p = request.GET.get('page')
-        monitors = monitor_model.MonitorPoint.objects.all()
+        monitors = monitor_model.MonitorPoint.objects.all().order_by("id")
         total_count = monitors.count()
         monitor_page = Page(p, total_count, 'monitor')
         monitor_data_start = monitor_page.data_start
@@ -196,32 +197,87 @@ class Photo(View):
 
 
 class Export(View):
+    @method_decorator(csrf_exempt)
     def post(self, request):
-        import json
-        data_dic = request.body.decode('utf-8')
-        data_dic = json.loads(data_dic)
-        mfunc = data_dic.get('exFunc')
-        mfunc = int(mfunc)
-        mpeople = data_dic.get('exPeople')
-        mdatastart = data_dic.get('exDateStart')
-        mdataend = data_dic.get('exDateEnd')
-        if mpeople:
-            monitors = monitor_model.MonitorPoint.objects.filter(work_function=mfunc, people=mpeople,
-                                                                 start_time__gte=mdatastart, start_time__lte=mdataend)
-        else:
-            monitors = monitor_model.MonitorPoint.objects.filter(work_function=mfunc,
-                                                                 start_time__gte=mdatastart, start_time__lte=mdataend)
+        print(request.POST)
+        data_dic = request.POST
+        response = {'pack': None, 'err_msg': ''}
+        m_select = int(data_dic.get('exSelect'))
+        m_func = int(data_dic.get('exFunc'))
+        m_people = data_dic.get('exPeople')
+        m_monitor = data_dic.get('exMonitor')
+        m_date_start = data_dic.get('exDateStart')
+        m_date_end = data_dic.get('exDateEnd')
 
-        if monitors:
-            from lib import export
-            from conf import my_setting
-            if hasattr(export, my_setting.ex_func_lst[mfunc]):
-                ex_func = getattr(export, my_setting.ex_func_lst[mfunc])
-                zipfile = ex_func(monitors)
-                print(zipfile)
-                return HttpResponse(zipfile)
+        if not m_date_start and not m_date_end:
+            response['err_msg'] = '请选择正确的起始和结束时间'
         else:
-            return HttpResponse(None)
+            import datetime
+            start_dt = datetime.datetime.strptime(m_date_start, '%Y-%m-%d')
+            end_dt = datetime.datetime.strptime(m_date_end, '%Y-%m-%d')
+            if start_dt > end_dt:
+                response['err_msg'] = '请选择正确的起始和结束时间'
+            else:
+                if m_select == 0:
+                    if not m_people:
+                        response['err_msg'] = '根据监测人导出数据时监测人不能为空!'
+                    else:
+                        monitors = monitor_model.MonitorPoint.objects.filter(work_function=m_func, people=m_people,
+                                                                             start_time__gte=m_date_start,
+                                                                             start_time__lte=m_date_end)
+                        print(monitors)
+                        if monitors:
+                            from lib import export
+                            from conf import my_setting
+                            if hasattr(export, my_setting.ex_func_lst[m_func]):
+                                ex_func = getattr(export, my_setting.ex_func_lst[m_func])
+                                try:
+                                    zipfile = ex_func(monitors)
+                                    response['pack'] = zipfile
+                                except Exception as e:
+                                    response['err_msg'] = str(e)
+                        else:
+                            response['err_msg'] = '找不到该监测人对应的数据,请确认监测人是否填写正确!'
+                elif m_select == 1:
+                    if not m_monitor:
+                        response['err_msg'] = '根据监测点导出时监测点号不能为空!'
+                    else:
+                        monitors = monitor_model.MonitorPoint.objects.filter(name__contains=m_monitor,
+                                                                             start_time__gte=m_date_start,
+                                                                             start_time__lte=m_date_end)
+                        print(monitors)
+                        if monitors:
+                            from lib import export
+                            from conf import my_setting
+                            if hasattr(export, my_setting.ex_func_lst[m_func]):
+                                ex_func = getattr(export, my_setting.ex_func_lst[m_func])
+                                try:
+                                    zipfile = ex_func(monitors)
+                                    response['pack'] = zipfile
+                                except Exception as e:
+                                    response['err_msg'] = str(e)
+                        else:
+                            response['err_msg'] = '找不到该监测点对应的数据,请确认监测点是否填写正确!'
+                else:
+                    monitors = monitor_model.MonitorPoint.objects.filter(start_time__gte=m_date_start,
+                                                                         start_time__lte=m_date_end)
+                    print(monitors)
+                    if monitors:
+                        from lib import export
+                        from conf import my_setting
+                        if hasattr(export, my_setting.ex_func_lst[m_func]):
+                            ex_func = getattr(export, my_setting.ex_func_lst[m_func])
+                            try:
+                                zipfile = ex_func(monitors)
+                                response['pack'] = zipfile
+                            except Exception as e:
+                                response['err_msg'] = str(e)
+                    else:
+                        response['err_msg'] = '找不到数据,请确认开始时间和结束时间是否正确!'
+
+        from django.http import JsonResponse
+        print(response)
+        return JsonResponse(response)
 
 
 class Download(View):

@@ -63,18 +63,18 @@ def get_bms_callback(request):
             print(msg)
 
             # 加密SUCCESS,完成回调注册
-            if msg.get('EventType') == "check_url":
-                # ret_msg = crypto.encrypt_text(aes_key, 'success').decode('utf-8')
-                ret_msg = crypto.encrypt(aes_key, 'success', key).decode('utf-8')
-                sign = crypto.generate_callback_signature(my_setting.token, ret_msg, timestamp, nonce)
-                # print('ret_msg：', type(ret_msg), ret_msg)
-                ret_json = json.dumps(
-                    {'msg_signature': sign, 'timeStamp': timestamp, 'nonce': nonce, 'encrypt': ret_msg})
-                # print('ret_json：', ret_json)
-                return HttpResponse(ret_json)
+            # if msg.get('EventType') == "check_url":
+            #     # ret_msg = crypto.encrypt_text(aes_key, 'success').decode('utf-8')
+            #     ret_msg = crypto.encrypt(aes_key, 'success', key).decode('utf-8')
+            #     sign = crypto.generate_callback_signature(my_setting.token, ret_msg, timestamp, nonce)
+            #     # print('ret_msg：', type(ret_msg), ret_msg)
+            #     ret_json = json.dumps(
+            #         {'msg_signature': sign, 'timeStamp': timestamp, 'nonce': nonce, 'encrypt': ret_msg})
+            #     # print('ret_json：', ret_json)
+            #     return HttpResponse(ret_json)
 
             # 判断审批事件为结束，且审批意见为同意
-            elif msg.get('EventType') == "bpms_instance_change" and msg.get('result') == 'agree' and msg.get(
+            if msg.get('EventType') == "bpms_instance_change" and msg.get('result') == 'agree' and msg.get(
                     'processCode') in my_setting.process_code_lst:
                 # 获取审批实例ID
                 bpms_id = msg.get('processInstanceId')
@@ -83,10 +83,20 @@ def get_bms_callback(request):
                 c_task = get_bpms_data_by_bpmsID.delay(bpms_id, bpms_code)
                 c_task_id = c_task.id
                 print("start running task：{}".format(c_task_id))
+                # ret_msg = crypto.encrypt(aes_key, 'success', key).decode('utf-8')
+                # sign = crypto.generate_callback_signature(my_setting.token, ret_msg, timestamp, nonce)
+                # ret_json = json.dumps(
+                #     {'msg_signature': sign, 'timeStamp': timestamp, 'nonce': nonce, 'encrypt': ret_msg})
+                # return HttpResponse(ret_json)
+
+            ret_msg = crypto.encrypt(aes_key, 'success', key).decode('utf-8')
+            sign = crypto.generate_callback_signature(my_setting.token, ret_msg, timestamp, nonce)
+            ret_json = json.dumps(
+                {'msg_signature': sign, 'timeStamp': timestamp, 'nonce': nonce, 'encrypt': ret_msg})
+            print('ret_json：', ret_json)
+            return HttpResponse(ret_json)
     else:
         print('GET:', request.GET)
-
-    return HttpResponse(None)
 
 
 @csrf_exempt

@@ -25,6 +25,9 @@ class MonitorPoint(models.Model):
     # sample_info = models.ManyToManyField(to='SampleInfo')
     # flow_info = models.ManyToManyField(to='FlowInfo')
 
+    def __str__(self):
+        return f'监测点号:{self.name}----物探号:{self.geophysical_point}'
+
 
 class SampleInfo(models.Model):
     id = models.AutoField(primary_key=True)
@@ -57,6 +60,9 @@ class SampleInfo(models.Model):
     SinkableS = models.CharField('易沉固体', max_length=32, null=True)
     Sulfide = models.CharField('硫化物', max_length=32, null=True)
     Cyanide = models.CharField('氰化物', max_length=32, null=True)
+
+    def __str__(self):
+        return f'样品编号:{self.sample_number}----采样人:{self.people}'
 
 
 class FlowInfo(models.Model):

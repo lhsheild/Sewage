@@ -126,27 +126,20 @@
                 <div class="modal-body">
                     <form class="form" method="post" action="">
                         {% csrf_token %}
-                        <div class="form-group">
-                            <label for="mFunc">监测方法</label>
-                            <select class="form-control" id="mFunc" name="mFunc">
-                                <option value="0">容器法</option>
-                                <option value="1">流速法（圆管）</option>
-                                <option value="2">流速法（方渠）</option>
-                                <option value="3">仪器法</option>
-                                <option value="4">无法监测</option>
-                            </select>
-                        </div>
-
+                        <label for="mFunc">监测方法</label>
+                        <select class="form-control" id="mFunc" name="mFunc">
+                            <option value="0">容器法</option>
+                            <option value="1">流速法（圆管）</option>
+                            <option value="2">流速法（方渠）</option>
+                            <option value="3">仪器法</option>
+                            <option value="4">无法监测</option>
+                        </select>
                         <div class="form-group">
                             <label for="mPeople">监测者</label>
                             <input type="text" class="form-control" id="mPeople" placeholder="监测者姓名" name="mPeople">
-                        </div>
-                        <div class="form-group">
                             <label for="mDateStart">开始日期</label>
                             <input type="date" class="form-control datepicker datepicker-days dateStart" id="mDateStart"
                                    placeholder="选择查询开始日期" name="mDateStart">
-                        </div>
-                        <div class="form-group">
                             <label for="mDateEnd">结束日期</label>
                             <input type="date" class="form-control datepicker datepicker-days dateEnd" id="mDateEnd"
                                    placeholder="选择查询结束日期" name="mDateEnd">
@@ -173,44 +166,23 @@
                 <div class="modal-body">
                     <form class="form" method="post" action="../export/">
                         {% csrf_token %}
-                        <div class="form-group">
-                            <label for="exSelect">导出依据</label>
-                            <select class="form-control" id="exSelect" name="exSelect">
-                                <option value="0">按监测人导出</option>
-                                <option value="1">按监测点导出</option>
-                                <option value="2">全部导出</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="exFunc">监测方法</label>
-                            <select class="form-control" id="exFunc" name="exFunc">
-                                <option value="0">容器法</option>
-                                <option value="1">流速法（圆管）</option>
-                                <option value="2">流速法（方渠）</option>
-                                <option value="3">仪器法</option>
-                                <option value="4">无法监测</option>
-                            </select>
-                        </div>
+                        <label for="exFunc">监测方法</label>
+                        <select class="form-control" id="exFunc" name="exFunc">
+                            <option value="0">容器法</option>
+                            <option value="1">流速法（圆管）</option>
+                            <option value="2">流速法（方渠）</option>
+                            <option value="3">仪器法</option>
+                            <option value="4">无法监测</option>
+                        </select>
                         <div class="form-group">
                             <label for="exPeople">监测者</label>
-                            <input type="text" class="form-control" id="exPeople" placeholder="监测者姓名"
-                                   name="exPeople">
-                        </div>
-                        <div class="form-group">
-                            <label for="exMonitor">监测点</label>
-                            <input type="text" class="form-control" id="exMonitor" placeholder="监测点号"
-                                   name="exMonitor">
-                        </div>
-                        <div class="form-group">
+                            <input type="text" class="form-control" id="exPeople" placeholder="监测者姓名" name="exPeople">
                             <label for="exDateStart">开始日期</label>
                             <input type="date" class="form-control datepicker datepicker-days dateStart"
                                    id="exDateStart"
                                    placeholder="选择查询开始日期" name="exDateStart">
-                        </div>
-                        <div class="form-group">
                             <label for="exDateEnd">结束日期</label>
-                            <input type="date" class="form-control datepicker datepicker-days dateEnd"
-                                   id="exDateEnd"
+                            <input type="date" class="form-control datepicker datepicker-days dateEnd" id="exDateEnd"
                                    placeholder="选择查询结束日期" name="exDateEnd">
                         </div>
                         <div class="center text-center">
@@ -285,54 +257,51 @@
             });
 
             $('#exSureBtn').on('click', function () {
-
                 $(this).attr('disabled', 'true');
-
-                const exSelect = $('#exSelect').val();
-                const exFunc = $('#exFunc').val();
-                const exPeople = $('#exPeople').val();
-                const exMonitor = $('#exMonitor').val();
-                const exDateStart = $('#exDateStart').val();
-                const exDateEnd = $('#exDateEnd').val();
-                const data_dic = {
-                    exSelect: exSelect,
-                    exFunc: exFunc,
-                    exPeople: exPeople,
-                    exDateStart: exDateStart,
-                    exDateEnd: exDateEnd,
-                    exMonitor: exMonitor,
-                };
-                $.ajax({
-                    url: '../export/',
-                    type: 'POST',
-                    data: data_dic,
-                    success: function (response) {
-                        if (response.pack) {
+                if ($('#exFunc').val() != '' & $('#exPeople').val() != '' & $('#exDateStart').val() != '' &
+                    $('#exDateEnd').val() != '') {
+                    const exFunc = $('#exFunc').val();
+                    const exPeople = $('#exPeople').val();
+                    const exDateStart = $('#exDateStart').val();
+                    const exDateEnd = $('#exDateEnd').val();
+                    const data_dic = {
+                        exFunc: exFunc,
+                        exPeople: exPeople,
+                        exDateStart: exDateStart,
+                        exDateEnd: exDateEnd,
+                    };
+                    const data_json = JSON.stringify(data_dic);
+                    $.ajax({
+                        url: '../export/',
+                        type: 'POST',
+                        data: data_json,
+                        success: function (ret) {
+                            alert(ret);
                             const baseUrl = '/down/';
                             const params = {
-                                'file': response.pack,
+                                'file': ret,
                             };
                             const finalUrl = toUrl(baseUrl, params);
                             fetch(finalUrl).then(res => res.blob().then(blob => {
                                 let a = document.createElement('a');
                                 const url = window.URL.createObjectURL(blob);
-                                const filename = response.pack;
+                                const filename = ret;
                                 a.href = url;
                                 a.download = filename;
                                 a.click();
                                 window.URL.revokeObjectURL(url);
                             }));
                             $('#exSureBtn').removeAttr('disabled');
-                        } else {
-                            alert(response.err_msg)
+                        },
+                        error: function (ret) {
+                            alert(ret);
                             $('#exSureBtn').removeAttr('disabled');
-                        }
-                    },
-                    error: function (response) {
-                        alert(response.err_msg);
-                        $('#exSureBtn').removeAttr('disabled');
-                    },
-                });
+                        },
+                    });
+                } else {
+                    alert('请输入完整条件');
+                    $('#exSureBtn').removeAttr('disabled');
+                }
             });
         });
     </script>
