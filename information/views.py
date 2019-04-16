@@ -259,7 +259,7 @@ class Export(View):
                         else:
                             response['err_msg'] = '找不到该监测点对应的数据,请确认监测点是否填写正确!'
                 else:
-                    monitors = monitor_model.MonitorPoint.objects.filter(start_time__gte=m_date_start,
+                    monitors = monitor_model.MonitorPoint.objects.filter(work_function=m_func, start_time__gte=m_date_start,
                                                                          start_time__lte=m_date_end)
                     print(monitors)
                     if monitors:
