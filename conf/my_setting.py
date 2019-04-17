@@ -27,6 +27,9 @@ corp_id = "ding064ce37e8c6fff8435c2f4657eb6378f"
 # 微应用
 app_key = 'dingmdy8p4txyehahwqv'
 app_secret = 'msKp0WTSjbgcaLmhmBUJhYhqkpWua-Gu8HTvSxhTf1tgIwuf4U50a_CXqoQVzYQg'
+"""20190417测试"""
+test_app_key = 'dingqzo9n75ruqge7aum'
+test_app_secret = '3Sf-Tng0Y4DhPSePmtzM7ZYXxaWiqcJfP34vOrGJXs_tY37p3XCb8hgLHgPK9_mx'
 
 # 加密解密
 aes_key = '1234567890123456789012345678901234567890123'
