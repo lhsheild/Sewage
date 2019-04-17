@@ -229,118 +229,118 @@
 
     <script type="text/javascript">
 
-        function toUrl(url, params) {
-            let paramsArr = [];
-            if (params) {
-                Object.keys(params).forEach(item => {
-                    paramsArr.push(item + '=' + params[item]);
-                });
-                if (url.search(/\?/) === -1) {
-                    url += '?' + paramsArr.join('&');
-                } else {
-                    url += '&' + paramsArr.join('&');
-                }
+      function toUrl(url, params) {
+        let paramsArr = [];
+        if (params) {
+          Object.keys(params).forEach(item => {
+            paramsArr.push(item + '=' + params[item]);
+          });
+          if (url.search(/\?/) === -1) {
+            url += '?' + paramsArr.join('&');
+          } else {
+            url += '&' + paramsArr.join('&');
+          }
 
-            }
-            return url;
+        }
+        return url;
+      }
+
+      $(document).ready(function() {
+        let startDate;
+        const date = new Date();
+        let startMonth = date.getMonth();
+        let nowMonth = startMonth + 1;
+        let strDate = date.getDate();
+        const seperator = '-';
+        if (nowMonth >= 1 && nowMonth <= 9) {
+          nowMonth = '0' + nowMonth;
+        }
+        if (startMonth >= 1 && startMonth <= 9) {
+          startMonth = '0' + startMonth;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+          strDate = '0' + strDate;
+        }
+        if (startMonth == '02') {
+          if (strDate == '29') {
+            startDate = '28';
+          } else if (strDate == '30') {
+            startDate = '28';
+          } else if (strDate == '31') {
+            startDate = '28';
+          } else {
+            startDate = strDate;
+          }
+        } else {
+          startDate = strDate;
         }
 
-        $(document).ready(function () {
-            let startDate;
-            const date = new Date();
-            let startMonth = date.getMonth();
-            let nowMonth = startMonth + 1;
-            let strDate = date.getDate();
-            const seperator = '-';
-            if (nowMonth >= 1 && nowMonth <= 9) {
-                nowMonth = '0' + nowMonth;
-            }
-            if (startMonth >= 1 && startMonth <= 9) {
-                startMonth = '0' + startMonth;
-            }
-            if (strDate >= 0 && strDate <= 9) {
-                strDate = '0' + strDate;
-            }
-            if (startMonth == '02') {
-                if (strDate == '29') {
-                    startDate = '28';
-                } else if (strDate == '30') {
-                    startDate = '28';
-                } else if (strDate == '31') {
-                    startDate = '28';
-                } else {
-                    startDate = strDate;
-                }
-            } else {
-                startDate = strDate;
-            }
+        startDate = date.getFullYear() + seperator + startMonth + seperator + startDate;
+        const nowDate = date.getFullYear() + seperator + nowMonth + seperator + strDate;
+        $('.dateStart').val(startDate);
+        $('.dateEnd').val(nowDate);
 
-            startDate = date.getFullYear() + seperator + startMonth + seperator + startDate;
-            const nowDate = date.getFullYear() + seperator + nowMonth + seperator + strDate;
-            $('.dateStart').val(startDate);
-            $('.dateEnd').val(nowDate);
-
-            $('#exModalButton').on('click', function () {
-                $('#exModal').modal('show');
-            });
-
-            $('#exSureBtn').on('click', function () {
-
-                $(this).attr('disabled', 'true');
-                $(this).text('正在导出...')
-                $("#exResetBtn").attr('disabled', 'true');
-
-                const exSelect = $('#exSelect').val();
-                const exFunc = $('#exFunc').val();
-                const exPeople = $('#exPeople').val();
-                const exMonitor = $('#exMonitor').val();
-                const exDateStart = $('#exDateStart').val();
-                const exDateEnd = $('#exDateEnd').val();
-                const data_dic = {
-                    exSelect: exSelect,
-                    exFunc: exFunc,
-                    exPeople: exPeople,
-                    exDateStart: exDateStart,
-                    exDateEnd: exDateEnd,
-                    exMonitor: exMonitor,
-                };
-                $.ajax({
-                    url: '../export/',
-                    type: 'POST',
-                    data: data_dic,
-                    success: function (response) {
-                        if (response.pack) {
-                            const baseUrl = '/down/';
-                            const params = {
-                                'file': response.pack,
-                            };
-                            const finalUrl = toUrl(baseUrl, params);
-                            fetch(finalUrl).then(res => res.blob().then(blob => {
-                                let a = document.createElement('a');
-                                const url = window.URL.createObjectURL(blob);
-                                const filename = response.pack;
-                                a.href = url;
-                                a.download = filename;
-                                a.click();
-                                window.URL.revokeObjectURL(url);
-                            }));
-                            $('#exSureBtn').removeAttr('disabled');
-                            $('#exSureBtn').text("确定");
-                            $("#exResetBtn").removeAttr('disabled');
-                        } else {
-                            alert(response.err_msg)
-                            $('#exSureBtn').removeAttr('disabled');
-                            $('#exSureBtn').text("确定");
-                            $("#exResetBtn").removeAttr('disabled');
-                        }
-                    },
-                    error: function (response) {
-                        alert(response.err_msg);
-                        $('#exSureBtn').removeAttr('disabled');
-                    },
-                });
-            });
+        $('#exModalButton').on('click', function() {
+          $('#exModal').modal('show');
         });
+
+        $('#exSureBtn').on('click', function() {
+
+          $(this).attr('disabled', 'true');
+          $(this).text('正在导出...');
+          $('#exResetBtn').attr('disabled', 'true');
+
+          const exSelect = $('#exSelect').val();
+          const exFunc = $('#exFunc').val();
+          const exPeople = $('#exPeople').val();
+          const exMonitor = $('#exMonitor').val();
+          const exDateStart = $('#exDateStart').val();
+          const exDateEnd = $('#exDateEnd').val();
+          const data_dic = {
+            exSelect: exSelect,
+            exFunc: exFunc,
+            exPeople: exPeople,
+            exDateStart: exDateStart,
+            exDateEnd: exDateEnd,
+            exMonitor: exMonitor,
+          };
+          $.ajax({
+            url: '../export/',
+            type: 'POST',
+            data: data_dic,
+            success: function(response) {
+              if (response.pack) {
+                const baseUrl = '/down/';
+                const params = {
+                  'file': response.pack,
+                };
+                const finalUrl = toUrl(baseUrl, params);
+                fetch(finalUrl).then(res => res.blob().then(blob => {
+                  let a = document.createElement('a');
+                  const url = window.URL.createObjectURL(blob);
+                  const filename = response.pack;
+                  a.href = url;
+                  a.download = filename;
+                  a.click();
+                  window.URL.revokeObjectURL(url);
+                }));
+                $('#exSureBtn').removeAttr('disabled');
+                $('#exSureBtn').text('确定');
+                $('#exResetBtn').removeAttr('disabled');
+              } else {
+                alert(response.err_msg);
+                $('#exSureBtn').removeAttr('disabled');
+                $('#exSureBtn').text('确定');
+                $('#exResetBtn').removeAttr('disabled');
+              }
+            },
+            error: function(response) {
+              alert(response.err_msg);
+              $('#exSureBtn').removeAttr('disabled');
+            },
+          });
+        });
+      });
     </script>
 
 {% endblock %}

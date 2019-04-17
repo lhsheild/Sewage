@@ -99,17 +99,34 @@ def func_container(data_dic):
     volume3 = all_data[12].get('value').strip()
     # print(volume3)
 
+    """20190417去除样品编号选项,改为根据检测时间段判断"""
     # 样品编号
-    sample_number = all_data[13].get('value').strip()
+    # sample_number = all_data[13].get('value').strip()
+    sample_number = None
+    monitor_time_str = str(monitor_time)
+    if monitor_time_str == '08:00:00':
+        sample_number = name +'-1'
+    elif monitor_time_str == '12:30:00':
+        sample_number = name +'-2'
+    else:
+        sample_number = name + '-3'
     # print(sample_number)
 
+    '''20190417 检测指标默认为["SS","COD","NH3-N","TP","TN"]'''
     # 监测指标
-    indicator = all_data[14].get('value').strip()
+    indicator = all_data[13].get('value').strip()
+    print(indicator)
+    if not indicator or indicator == 'null' or indicator == '' or indicator == '[]':
+        indicator = ["SS","COD","NH3-N","TP","TN"]
 
+    '''20190417 样品数量默认为2'''
     # 样品数量
-    sample_count = all_data[15].get('value').strip()
+    sample_count = all_data[14].get('value').strip()
+    print(sample_count)
+    if not sample_count or sample_count == 'null':
+        sample_count = 2
 
-    sample_photo_link_lst = json.loads(all_data[16].get('value'))  # 钉钉回调的样品照链接
+    sample_photo_link_lst = json.loads(all_data[15].get('value'))  # 钉钉回调的样品照链接
     sample_photo_lst = []
     if sample_photo_link_lst is not None:
         for counter, sample_photo_link in enumerate(sample_photo_link_lst):
@@ -119,13 +136,13 @@ def func_container(data_dic):
     # print(sample_photo_lst)
 
     # 样品颜色
-    sample_color = all_data[17].get('value').strip()
+    sample_color = all_data[16].get('value').strip()
     # print(sample_color)
     # 样品气味
-    sample_odor = all_data[18].get('value').strip()
+    sample_odor = all_data[17].get('value').strip()
     # print(sample_odor)
     # 样品浊度
-    sample_turbidity = all_data[19].get('value').strip()
+    sample_turbidity = all_data[18].get('value').strip()
     # print(sample_turbidity)
 
     try:
@@ -826,7 +843,7 @@ def crontab_get_failed_callback():
                     # 获取审批实例ID和审批类型ID
                     bpms_id = bpms_callback_data.get('processInstanceId')
                     bpms_code = bpms_callback_data.get('processCode')
-                    c_task = get_bpms_data_by_bpmsID.delay(bpms_id, bpms_code)
+                    c_task = get_bpms_data_by_bpmsID(bpms_id, bpms_code)
                     c_task_id = c_task.id
                     print("start running failed callback task：{}".format(c_task_id))
         if not get_info.get('has_more'):
