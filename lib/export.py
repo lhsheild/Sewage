@@ -41,6 +41,11 @@ def ex_container(monitor_objs):
         shutil.copy(os.path.join(my_setting.excel_folder, '流量表.xlsx'),
                     output_path_for_excel_per_monitor)  # 监测点对应流量表excel表格
         shutil.copy(os.path.join(my_setting.excel_folder, '监测点信息.xlsx'), output_path_per_monitor)  # 监测点对应监测点信息excel表格
+
+        """20190417增加总体的小区监测统计表"""
+        shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'),
+                    output_path)  # 监测点对应统计表excel表格
+
         # 监测点信息表
         info_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
         monitor_sheet = info_excel['监测点']
@@ -81,6 +86,12 @@ def ex_container(monitor_objs):
         samples = monitor.sample.all().order_by('sample_date', 'sample_time')
         static_excel = openpyxl.load_workbook(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         static_sample = static_excel['水质']
+
+        """20190417增加总体的小区监测统计表"""
+        static_excel_total = openpyxl.load_workbook(os.path.join(output_path, '小区监测统计表.xlsx'))
+        static_sample_total = static_excel_total['水质']
+        static_sample_total_max_row = static_sample_total.max_row
+
         for sample_count, sample in enumerate(samples, 1):
             sample_sheet['A{}'.format(sample_sheet_max_row + sample_count)] = sample.id
             sample_sheet['B{}'.format(sample_sheet_max_row + sample_count)] = sample.monitor_point.id
@@ -126,7 +137,27 @@ def ex_container(monitor_objs):
             static_sample['R{}'.format(4 + sample_count)] = sample.monitor_task  # 监测项目
             static_sample['S{}'.format(4 + sample_count)] = sample.sample_count  # 样品数量
             static_sample['T{}'.format(4 + sample_count)] = sample.people  # 采样人
+
+            """20190417增加总体的小区监测统计表"""
+            # 打开样品统计表
+            static_sample_total['A{}'.format(static_sample_total_max_row + sample_count)] = sample_count  # 序号
+            static_sample_total['B{}'.format(static_sample_total_max_row + sample_count)] = monitor.name  # 采样点位
+            static_sample_total[
+                'E{}'.format(static_sample_total_max_row + sample_count)] = monitor.geophysical_point  # 物探点号
+            static_sample_total['H{}'.format(static_sample_total_max_row + sample_count)] = sample.sample_date  # 采样日期
+            static_sample_total['I{}'.format(static_sample_total_max_row + sample_count)] = sample.sample_time  # 采样时间段
+            static_sample_total['J{}'.format(static_sample_total_max_row + sample_count)] = sample.sample_number  # 样品编号
+            static_sample_total[
+                'Q{}'.format(
+                    static_sample_total_max_row + sample_count)] = sample.sample_color + '、' + sample.sample_odor + '、' + sample.sample_turbidity  # 样品状态
+            static_sample_total['R{}'.format(static_sample_total_max_row + sample_count)] = sample.monitor_task  # 监测项目
+            static_sample_total['S{}'.format(static_sample_total_max_row + sample_count)] = sample.sample_count  # 样品数量
+            static_sample_total['T{}'.format(static_sample_total_max_row + sample_count)] = sample.people  # 采样人
+
         static_excel.save(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
+
+        """20190417增加总体的小区监测统计表"""
+        static_excel_total.save(os.path.join(output_path, '小区监测统计表.xlsx'))
 
         # 流量
         info_flow_sheet = info_excel['流量']
@@ -398,6 +429,22 @@ def ex_container(monitor_objs):
         static_flow['R4'] = monitor.people
         static_excel.save(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
         info_excel.save(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
+
+        """20190417增加总体的小区监测统计表"""
+        static_excel_total = openpyxl.load_workbook(os.path.join(output_path, '小区监测统计表.xlsx'))
+        static_flow_total = static_excel_total['流量']
+        static_flow_total_max_row = static_flow_total.max_row
+        static_flow['A{}'.format(static_flow_total_max_row + 1)] = monitor_count
+        static_flow['B{}'.format(static_flow_total_max_row + 1)] = monitor.name
+        static_flow['E{}'.format(static_flow_total_max_row + 1)] = monitor.geophysical_point
+        static_flow['L{}'.format(static_flow_total_max_row + 1)] = monitor.start_time
+        static_flow['M{}'.format(static_flow_total_max_row + 1)] = final_monitor_date
+        static_flow['N{}'.format(static_flow_total_max_row + 1)] = '当日00:00至24:00'
+        static_flow['O{}'.format(static_flow_total_max_row + 1)] = flow_for_whole_day
+        static_flow['Q{}'.format(static_flow_total_max_row + 1)] = '容器法'
+        static_flow['R{}'.format(static_flow_total_max_row + 1)] = monitor.people
+        static_excel_total.save(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
+
     file_news = time_str + '.zip'
     file_news = my_setting.export_folder + os.sep + file_news
     with zipfile.ZipFile(file_news, 'w', zipfile.ZIP_DEFLATED) as zf:
