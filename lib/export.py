@@ -1,14 +1,15 @@
-import openpyxl
-import os
-from statistics import mean
-import time
 import json
+import os
 import shutil
+import time
 import zipfile
+from statistics import mean
 
+import openpyxl
+
+from Sewage import settings
 from conf import my_setting
 from lib.common import list_split
-from Sewage import settings
 
 
 def ex_container(monitor_objs):
@@ -43,8 +44,15 @@ def ex_container(monitor_objs):
         shutil.copy(os.path.join(my_setting.excel_folder, '监测点信息.xlsx'), output_path_per_monitor)  # 监测点对应监测点信息excel表格
 
         """20190417增加总体的小区监测统计表"""
-        shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'),
-                    output_path)  # 监测点对应统计表excel表格
+        if not os.path.exists(os.path.join(output_path, '小区监测统计表.xlsx')):
+            shutil.copy(os.path.join(my_setting.excel_folder, '小区监测统计表.xlsx'),
+                        output_path)  # 监测点对应统计表excel表格
+        from openpyxl.styles import Border, Side
+
+        border = Border(left=Side(border_style='thin', color='000000'),
+                        right=Side(border_style='thin', color='000000'),
+                        top=Side(border_style='thin', color='000000'),
+                        bottom=Side(border_style='thin', color='000000'))
 
         # 监测点信息表
         info_excel = openpyxl.load_workbook(os.path.join(output_path_per_monitor, '监测点信息.xlsx'))
@@ -140,7 +148,9 @@ def ex_container(monitor_objs):
 
             """20190417增加总体的小区监测统计表"""
             # 打开样品统计表
-            static_sample_total['A{}'.format(static_sample_total_max_row + sample_count)] = sample_count  # 序号
+            static_sample_total['A{}'.format(static_sample_total_max_row + sample_count)] = static_sample_total[
+                                                                                                'A{}'.format(
+                                                                                                    static_sample_total_max_row + sample_count)].row - 4  # 序号
             static_sample_total['B{}'.format(static_sample_total_max_row + sample_count)] = monitor.name  # 采样点位
             static_sample_total[
                 'E{}'.format(static_sample_total_max_row + sample_count)] = monitor.geophysical_point  # 物探点号
@@ -434,16 +444,16 @@ def ex_container(monitor_objs):
         static_excel_total = openpyxl.load_workbook(os.path.join(output_path, '小区监测统计表.xlsx'))
         static_flow_total = static_excel_total['流量']
         static_flow_total_max_row = static_flow_total.max_row
-        static_flow['A{}'.format(static_flow_total_max_row + 1)] = monitor_count
-        static_flow['B{}'.format(static_flow_total_max_row + 1)] = monitor.name
-        static_flow['E{}'.format(static_flow_total_max_row + 1)] = monitor.geophysical_point
-        static_flow['L{}'.format(static_flow_total_max_row + 1)] = monitor.start_time
-        static_flow['M{}'.format(static_flow_total_max_row + 1)] = final_monitor_date
-        static_flow['N{}'.format(static_flow_total_max_row + 1)] = '当日00:00至24:00'
-        static_flow['O{}'.format(static_flow_total_max_row + 1)] = flow_for_whole_day
-        static_flow['Q{}'.format(static_flow_total_max_row + 1)] = '容器法'
-        static_flow['R{}'.format(static_flow_total_max_row + 1)] = monitor.people
-        static_excel_total.save(os.path.join(output_path_for_excel_per_monitor, '小区监测统计表.xlsx'))
+        static_flow_total['A{}'.format(static_flow_total_max_row + 1)] = monitor_count
+        static_flow_total['B{}'.format(static_flow_total_max_row + 1)] = monitor.name
+        static_flow_total['E{}'.format(static_flow_total_max_row + 1)] = monitor.geophysical_point
+        static_flow_total['L{}'.format(static_flow_total_max_row + 1)] = monitor.start_time
+        static_flow_total['M{}'.format(static_flow_total_max_row + 1)] = final_monitor_date
+        static_flow_total['N{}'.format(static_flow_total_max_row + 1)] = '当日00:00至24:00'
+        static_flow_total['O{}'.format(static_flow_total_max_row + 1)] = flow_for_whole_day
+        static_flow_total['Q{}'.format(static_flow_total_max_row + 1)] = '容器法'
+        static_flow_total['R{}'.format(static_flow_total_max_row + 1)] = monitor.people
+        static_excel_total.save(os.path.join(output_path, '小区监测统计表.xlsx'))
 
     file_news = time_str + '.zip'
     file_news = my_setting.export_folder + os.sep + file_news
