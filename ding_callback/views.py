@@ -31,7 +31,7 @@ def register_callback(request):
     # 注册回调事件
     data = {'call_back_tag': ['bpms_task_change', 'bpms_instance_change'], 'token': my_setting.token,
             'aes_key': my_setting.aes_key,
-            'url': 'http://lh.vaiwan.com/get_bms_callback/'}
+            'url': 'http://113.16.255.12:11012/get_bms_callback/'}
     data = json.dumps(data)
     reg = requests.post('https://oapi.dingtalk.com/call_back/register_call_back?access_token={}'.format(access_token),
                         data=data)
