@@ -46,6 +46,10 @@ def func_container(data_dic):
     work_function = 0
     upload_time = json.loads(all_data[2].get('value'))[0]  # 审批提交时间
     year_s, mon_s, day_s = upload_time.split(' ')[0].split('-')  # 年月日
+
+    """20190420修复图片被覆盖小bug"""
+    sec = upload_time.split(':')[-1]
+
     date = datetime.datetime(int(year_s), int(mon_s), int(day_s)).date()  # 检测日期/采样日期
     # print(date)
     file_path = my_setting.img_folder_path
@@ -54,7 +58,7 @@ def func_container(data_dic):
     exterior_photo_lst = []
     if exterior_photo_link_lst is not None:
         for counter, exterior_photo_link in enumerate(exterior_photo_link_lst):
-            img_name = '{}_{}_{}'.format(geophysical_point, 'exterior', counter)
+            img_name = '{}_{}_{}_{}'.format(geophysical_point, sec, 'exterior', counter)
             img_path = save_img((exterior_photo_link, img_name, upload_time, my_setting.img_folder_path))
             exterior_photo_lst.append(img_path)
     # print(exterior_photo_lst)
@@ -63,7 +67,7 @@ def func_container(data_dic):
     water_photo_lst = []
     if water_photo_link_lst is not None:
         for counter, water_photo_link in enumerate(water_photo_link_lst):
-            img_name = '{}_{}_{}'.format(geophysical_point, 'flow', counter)
+            img_name = '{}_{}_{}_{}'.format(geophysical_point, sec, 'flow', counter)
             img_path = save_img((water_photo_link, img_name, upload_time, my_setting.img_folder_path))
             water_photo_lst.append(img_path)
     # print(water_photo_lst)
@@ -72,7 +76,7 @@ def func_container(data_dic):
     work_photo_lst = []
     if work_photo_link_lst is not None:
         for counter, work_photo_link in enumerate(work_photo_link_lst):
-            img_name = '{}_{}_{}'.format(geophysical_point, 'work', counter)
+            img_name = '{}_{}_{}_{}'.format(geophysical_point, sec, 'work', counter)
             img_path = save_img((work_photo_link, img_name, upload_time, my_setting.img_folder_path))
             work_photo_lst.append(img_path)
     # print(work_photo_lst)
@@ -105,9 +109,9 @@ def func_container(data_dic):
     sample_number = None
     monitor_time_str = str(monitor_time)
     if monitor_time_str == '08:00:00':
-        sample_number = name +'-1'
+        sample_number = name + '-1'
     elif monitor_time_str == '12:30:00':
-        sample_number = name +'-2'
+        sample_number = name + '-2'
     else:
         sample_number = name + '-3'
     # print(sample_number)
@@ -117,7 +121,7 @@ def func_container(data_dic):
     indicator = all_data[13].get('value').strip()
     print(indicator)
     if not indicator or indicator == 'null' or indicator == '' or indicator == '[]':
-        indicator = ["SS","COD","NH3-N","TP","TN"]
+        indicator = ["SS", "COD", "NH3-N", "TP", "TN"]
 
     '''20190417 样品数量默认为2'''
     # 样品数量
