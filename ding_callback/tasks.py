@@ -738,11 +738,14 @@ def func_unable(data_dic):
     date = datetime.datetime(int(year_s), int(mon_s), int(day_s)).date()  # 检测日期/采样日期
     # print(date)
 
+    """修复多次上传照片被覆盖的问题"""
+    hour_min = upload_time.split(' ')[-1].split(':')[-3] + upload_time.split(' ')[-1].split(':')[-2]
+
     exterior_photo_link_lst = json.loads(all_data[3].get('value'))  # 钉钉回调的外景照链接
     exterior_photo_lst = []
     if exterior_photo_link_lst is not None:
         for counter, exterior_photo_link in enumerate(exterior_photo_link_lst):
-            img_name = '{}_{}_{}'.format(geophysical_point, 'exterior', counter)
+            img_name = '{}_{}_{}_{}'.format(geophysical_point, hour_min, 'exterior', counter)
             img_path = save_img((exterior_photo_link, img_name, upload_time, my_setting.img_folder_path))
             exterior_photo_lst.append(img_path)
     # print(exterior_photo_lst)
@@ -751,7 +754,7 @@ def func_unable(data_dic):
     water_photo_lst = []
     if water_photo_link_lst is not None:
         for counter, water_photo_link in enumerate(water_photo_link_lst):
-            img_name = '{}_{}_{}'.format(geophysical_point, 'water', counter)
+            img_name = '{}_{}_{}_{}'.format(geophysical_point, hour_min, 'water', counter)
             img_path = save_img((water_photo_link, img_name, upload_time, my_setting.img_folder_path))
             water_photo_lst.append(img_path)
     # print(water_photo_lst)
