@@ -134,7 +134,7 @@ def func_container(data_dic):
     sample_photo_lst = []
     if sample_photo_link_lst is not None:
         for counter, sample_photo_link in enumerate(sample_photo_link_lst):
-            img_name = '{}_{}_{}_{}'.format(geophysical_point, sample_number, 'sample', counter)
+            img_name = '{}_{}_{}_{}_{}'.format(geophysical_point, sec, sample_number, 'sample', counter)
             img_path = save_img((sample_photo_link, img_name, upload_time, my_setting.img_folder_path))
             sample_photo_lst.append(img_path)
     # print(sample_photo_lst)
