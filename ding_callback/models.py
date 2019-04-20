@@ -11,17 +11,17 @@ class MonitorPoint(models.Model):
     is_monitor = models.IntegerField('是否监测')
     not_monitor_reason = models.CharField('无法监测原因', max_length=512, null=True)
     work_function = models.IntegerField('监测方法')  # 0/1/2/3/4 容器/圆管/方渠/仪器/无法监测
-    exterior_photo = models.CharField('外景照', max_length=512, null=True)
-    water_flow_photo = models.CharField('水流照', max_length=512, null=True)
+    exterior_photo = models.CharField('外景照', max_length=1024, null=True)
+    water_flow_photo = models.CharField('水流照', max_length=1024, null=True)
     start_time = models.DateField('开始监测日期', max_length=32)
 
     # 仪器法需要的照片
-    status_photo = models.CharField('监测点现状照', max_length=512, null=True)
-    probe_photo = models.CharField('探头照', max_length=512, null=True)
-    machine_photo = models.CharField('仪器照', max_length=512, null=True)
-    setup_photo = models.CharField('仪器设置照', max_length=512, null=True)
+    status_photo = models.CharField('监测点现状照', max_length=1024, null=True)
+    probe_photo = models.CharField('探头照', max_length=1024, null=True)
+    machine_photo = models.CharField('仪器照', max_length=1024, null=True)
+    setup_photo = models.CharField('仪器设置照', max_length=1024, null=True)
 
-    work_photo = models.CharField('工作照', max_length=512, null=True)
+    work_photo = models.CharField('工作照', max_length=1024, null=True)
     # sample_info = models.ManyToManyField(to='SampleInfo')
     # flow_info = models.ManyToManyField(to='FlowInfo')
 
@@ -37,7 +37,7 @@ class SampleInfo(models.Model):
     sample_date = models.DateField('采样日期', max_length=32)
     sample_time = models.TimeField('采样时间段', max_length=32)
     sample_number = models.CharField('样品编号', max_length=32, null=False)
-    sample_photo = models.CharField('样品照', max_length=512)
+    sample_photo = models.CharField('样品照', max_length=1024)
     sample_color = models.CharField('样品颜色', max_length=32)
     sample_odor = models.CharField('样品气味', max_length=32)
     sample_turbidity = models.CharField('样品浊度', max_length=32)
