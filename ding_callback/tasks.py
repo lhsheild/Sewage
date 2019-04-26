@@ -48,7 +48,8 @@ def func_container(data_dic):
     year_s, mon_s, day_s = upload_time.split(' ')[0].split('-')  # 年月日
 
     """20190420修复图片被覆盖小bug"""
-    sec = upload_time.split(':')[-1]
+    # sec = upload_time.split(':')[-1]
+    sec = upload_time.split(' ')[-1].split(':')[-3] + upload_time.split(' ')[-1].split(':')[-2]  # 仅仅使用秒数还有是风险
 
     date = datetime.datetime(int(year_s), int(mon_s), int(day_s)).date()  # 检测日期/采样日期
     # print(date)
