@@ -10,7 +10,7 @@ cipher==0.1
 cryptography==2.6.1
 dingtalk==0.0.5
 Django==1.11.20
-django-celery-results==1.0.4
+django-celery-results==2.4.0
 dnspython==1.16.0
 eventlet==0.24.1
 greenlet==0.4.15
